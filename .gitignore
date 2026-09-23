@@ -1,0 +1,20 @@
+# dependencies
+node_modules/
+
+# secrets
+.env
+.env.*
+!.env.example
+
+# data: raw datasets, fetched articles and model output never go in the repo
+data/
+*.csv
+*.jsonl
+*.zip
+
+# build output
+dist/
+.DS_Store
+
+# synthetic perf-test export (bun run sample:synthetic)
+contract/sample-synthetic/
