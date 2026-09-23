@@ -3,10 +3,7 @@
   "id": "tor-367-roncesvalles-ave",
   "city": "toronto",
   "addr": "367 Roncesvalles Ave",
-  "ll": [
-    -79.45028,
-    43.65007
-  ],
+  "ll": [-79.45028, 43.65007],
   "hood": "Roncesvalles",
   "occupants": [
     {
@@ -14,10 +11,7 @@
       "bt": "food_retail",
       "from": "2024-03-22",
       "to": null,
-      "src": [
-        0,
-        1
-      ]
+      "src": [0, 1]
     }
   ],
   "sources": [

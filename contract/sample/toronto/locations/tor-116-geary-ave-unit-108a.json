@@ -3,10 +3,7 @@
   "id": "tor-116-geary-ave-unit-108a",
   "city": "toronto",
   "addr": "116 Geary Ave, Unit 108A",
-  "ll": [
-    -79.43483,
-    43.67053
-  ],
+  "ll": [-79.43483, 43.67053],
   "hood": "Junction-Wallace Emerson",
   "occupants": [
     {
@@ -19,31 +16,18 @@
         "id": "tor-116-geary-ave-unit-108a~famiglia-baldassarre",
         "type": "format_change",
         "status": "closed",
-        "d": [
-          "2026-08-14",
-          "2026-08-14"
-        ],
+        "d": ["2026-08-14", "2026-08-14"],
         "reasons": [
           {
             "code": "unknown",
             "kind": "stated",
             "summary": "Ending lunch service to focus on wholesale pasta; the business continues",
-            "src": [
-              2
-            ]
+            "src": [2]
           }
         ],
-        "evidence": [
-          {
-            "claim": "announced",
-            "src": 2
-          }
-        ]
+        "evidence": [{ "claim": "announced", "src": 2 }]
       },
-      "src": [
-        0,
-        1
-      ]
+      "src": [0, 1]
     }
   ],
   "sources": [

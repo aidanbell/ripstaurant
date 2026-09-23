@@ -3,10 +3,7 @@
   "id": "tor-46-blue-jays-way",
   "city": "toronto",
   "addr": "46 Blue Jays Way",
-  "ll": [
-    -79.39211,
-    43.64553
-  ],
+  "ll": [-79.39211, 43.64553],
   "hood": "Wellington Place",
   "occupants": [
     {
@@ -20,35 +17,21 @@
         "id": "tor-46-blue-jays-way~wahlburgers",
         "type": "permanent",
         "status": "closed",
-        "d": [
-          "2024-01-01",
-          "2024-01-16"
-        ],
+        "d": ["2024-01-01", "2024-01-16"],
         "reasons": [
           {
             "code": "unknown",
             "kind": "stated",
             "summary": "Staff said the decision came about organically as the business evolved",
-            "src": [
-              2
-            ]
+            "src": [2]
           }
         ],
         "evidence": [
-          {
-            "claim": "closed",
-            "src": 2
-          },
-          {
-            "claim": "closed",
-            "src": 0
-          }
+          { "claim": "closed", "src": 2 },
+          { "claim": "closed", "src": 0 }
         ]
       },
-      "src": [
-        0,
-        1
-      ]
+      "src": [0, 1]
     }
   ],
   "sources": [

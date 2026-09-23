@@ -3,10 +3,7 @@
   "id": "tor-3150-dufferin-st-unit-102",
   "city": "toronto",
   "addr": "3150 Dufferin St, Unit 102",
-  "ll": [
-    -79.4556,
-    43.71717
-  ],
+  "ll": [-79.4556, 43.71717],
   "hood": "Yorkdale-Glen Park",
   "occupants": [
     {
@@ -19,36 +16,21 @@
         "id": "tor-3150-dufferin-st-unit-102~swiss-chalet",
         "type": "temporary",
         "status": "reopened",
-        "d": [
-          "2023-10-04",
-          "2023-10-04"
-        ],
+        "d": ["2023-10-04", "2023-10-04"],
         "reasons": [
           {
             "code": "health_enforcement",
             "kind": "documented",
             "summary": "DineSafe closed notice after 14 infractions, including insects",
-            "src": [
-              1,
-              2
-            ]
+            "src": [1, 2]
           }
         ],
         "evidence": [
-          {
-            "claim": "closed",
-            "src": 2
-          },
-          {
-            "claim": "reopened",
-            "src": 1
-          }
+          { "claim": "closed", "src": 2 },
+          { "claim": "reopened", "src": 1 }
         ]
       },
-      "src": [
-        0,
-        1
-      ]
+      "src": [0, 1]
     }
   ],
   "sources": [

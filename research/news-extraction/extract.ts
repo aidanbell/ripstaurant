@@ -48,7 +48,9 @@ async function extract(article: Article) {
     fallbacks: "default",
     thinking: { type: "adaptive" },
     output_config: { effort: EFFORT, format: betaZodOutputFormat(Extraction) },
-    system: [{ type: "text", text: SYSTEM, cache_control: { type: "ephemeral" } }],
+    system: [
+      { type: "text", text: SYSTEM, cache_control: { type: "ephemeral" } },
+    ],
     messages: [
       {
         role: "user",
@@ -63,12 +65,19 @@ async function extract(article: Article) {
   if (response.stop_reason === "max_tokens" || !response.parsed_output) {
     throw new Error(`no parsed output (stop_reason=${response.stop_reason})`);
   }
-  return { result: response.parsed_output, usage: response.usage, model: response.model };
+  return {
+    result: response.parsed_output,
+    usage: response.usage,
+    model: response.model,
+  };
 }
 
 const limitArg = process.argv.indexOf("--limit");
 const articles: Article[] = await Bun.file("data/articles.json").json();
-const batch = limitArg > 0 ? articles.slice(0, Number(process.argv[limitArg + 1])) : articles;
+const batch =
+  limitArg > 0
+    ? articles.slice(0, Number(process.argv[limitArg + 1]))
+    : articles;
 
 const out: string[] = [];
 let inputTokens = 0;
@@ -79,22 +88,38 @@ for (const article of batch) {
   try {
     const { result, usage, model } = await extract(article);
     inputTokens +=
-      usage.input_tokens + (usage.cache_creation_input_tokens ?? 0) * 1.25 + (usage.cache_read_input_tokens ?? 0) * 0.1;
+      usage.input_tokens +
+      (usage.cache_creation_input_tokens ?? 0) * 1.25 +
+      (usage.cache_read_input_tokens ?? 0) * 0.1;
     outputTokens += usage.output_tokens;
-    out.push(JSON.stringify({ id: article.id, url: article.url, model, ...result }));
-    console.log(`${article.id} ok  ${result.closures.map((c) => `${c.name} [${c.event_type}]`).join(", ") || "(none)"}`);
+    out.push(
+      JSON.stringify({ id: article.id, url: article.url, model, ...result }),
+    );
+    console.log(
+      `${article.id} ok  ${result.closures.map((c) => `${c.name} [${c.event_type}]`).join(", ") || "(none)"}`,
+    );
   } catch (error) {
     failures++;
-    if (error instanceof Anthropic.RateLimitError) console.error(`${article.id} rate limited`);
-    else if (error instanceof Anthropic.APIError) console.error(`${article.id} API error ${error.status}: ${error.message}`);
+    if (error instanceof Anthropic.RateLimitError)
+      console.error(`${article.id} rate limited`);
+    else if (error instanceof Anthropic.APIError)
+      console.error(
+        `${article.id} API error ${error.status}: ${error.message}`,
+      );
     else console.error(`${article.id} failed: ${(error as Error).message}`);
   }
 }
 
 await Bun.write("data/extractions.jsonl", out.join("\n") + "\n");
 
-const cost = (inputTokens * PRICE_PER_MTOK.input + outputTokens * PRICE_PER_MTOK.output) / 1e6;
+const cost =
+  (inputTokens * PRICE_PER_MTOK.input + outputTokens * PRICE_PER_MTOK.output) /
+  1e6;
 const done = batch.length - failures;
 console.log(`\n${done}/${batch.length} extracted, effort=${EFFORT}`);
-console.log(`input ≈ ${Math.round(inputTokens)} tok (cache-weighted), output ${outputTokens} tok`);
-console.log(`cost ≈ $${cost.toFixed(3)}  (≈ $${(cost / Math.max(done, 1)).toFixed(4)}/article)`);
+console.log(
+  `input ≈ ${Math.round(inputTokens)} tok (cache-weighted), output ${outputTokens} tok`,
+);
+console.log(
+  `cost ≈ $${cost.toFixed(3)}  (≈ $${(cost / Math.max(done, 1)).toFixed(4)}/article)`,
+);

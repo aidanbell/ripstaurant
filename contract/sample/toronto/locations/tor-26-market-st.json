@@ -3,19 +3,14 @@
   "id": "tor-26-market-st",
   "city": "toronto",
   "addr": "26 Market St",
-  "ll": [
-    -79.37213,
-    43.64901
-  ],
+  "ll": [-79.37213, 43.64901],
   "hood": "St Lawrence-East Bayfront-The Islands",
   "occupants": [
     {
       "name": "Barsa Taberna",
       "from": "2013-10-30",
       "to": "2021-07-29",
-      "src": [
-        0
-      ]
+      "src": [0]
     },
     {
       "name": "Bar St. Lo",
@@ -27,50 +22,30 @@
         "id": "tor-26-market-st~bar-st-lo",
         "type": "permanent",
         "status": "closed",
-        "d": [
-          "2025-04-27",
-          "2025-04-27"
-        ],
+        "d": ["2025-04-27", "2025-04-27"],
         "reasons": [
           {
             "code": "sale",
             "kind": "stated",
             "summary": "Owners accepted an offer they couldn't refuse",
-            "src": [
-              1
-            ]
+            "src": [1]
           }
         ],
-        "next": {
-          "name": "Anejo Restaurant"
-        },
+        "next": { "name": "Anejo Restaurant" },
         "evidence": [
-          {
-            "claim": "closed",
-            "src": 1
-          },
-          {
-            "claim": "closed",
-            "src": 0
-          },
-          {
-            "claim": "successor",
-            "src": 0
-          }
+          { "claim": "closed", "src": 1 },
+          { "claim": "closed", "src": 0 },
+          { "claim": "successor", "src": 0 }
         ]
       },
-      "src": [
-        0
-      ]
+      "src": [0]
     },
     {
       "name": "Anejo Restaurant",
       "bt": "restaurant",
       "from": "2025-05-01",
       "to": null,
-      "src": [
-        0
-      ]
+      "src": [0]
     }
   ],
   "sources": [

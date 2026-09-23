@@ -3,10 +3,7 @@
   "id": "tor-224-parliament-st",
   "city": "toronto",
   "addr": "224 Parliament St",
-  "ll": [
-    -79.36532,
-    43.65715
-  ],
+  "ll": [-79.36532, 43.65715],
   "hood": "Moss Park",
   "occupants": [
     {
@@ -18,38 +15,22 @@
         "id": "tor-224-parliament-st~kabul-naan-kabob",
         "type": "permanent",
         "status": "closed",
-        "d": [
-          null,
-          "2022-09-08"
-        ],
+        "d": [null, "2022-09-08"],
         "reasons": [],
-        "next": {
-          "name": "Wanaag Restaurant"
-        },
+        "next": { "name": "Wanaag Restaurant" },
         "evidence": [
-          {
-            "claim": "closed",
-            "src": 0
-          },
-          {
-            "claim": "successor",
-            "src": 0
-          }
+          { "claim": "closed", "src": 0 },
+          { "claim": "successor", "src": 0 }
         ]
       },
-      "src": [
-        0
-      ]
+      "src": [0]
     },
     {
       "name": "Wanaag Restaurant",
       "bt": "restaurant",
       "from": "2022-09-08",
       "to": null,
-      "src": [
-        0,
-        1
-      ]
+      "src": [0, 1]
     }
   ],
   "sources": [

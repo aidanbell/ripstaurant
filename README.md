@@ -12,10 +12,13 @@ A map and list of Toronto restaurants that have closed since March 2022, and why
 - [research/news-extraction/](research/news-extraction/): news extraction prototype (Bun + Claude API)
 
 ```sh
-bun install
+bun install               # one workspace: contract, web, research/*
 bun run sample            # rebuild contract/sample/ from the fixture
 bun run sample:synthetic  # 10k-row perf-test export (git-ignored)
-bun test && bun run typecheck
+bun run typecheck         # every package, against the root tsconfig.base.json
+bun run lint              # root ESLint config (packages extend it)
+bun run format            # root Prettier config; format:check to verify
+bun test
 ```
 
 Contains information licensed under the Open Government Licence – Toronto.

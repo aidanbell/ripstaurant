@@ -3,10 +3,7 @@
   "id": "tor-615-queen-st-w",
   "city": "toronto",
   "addr": "615 Queen St W",
-  "ll": [
-    -79.40256,
-    43.64728
-  ],
+  "ll": [-79.40256, 43.64728],
   "hood": "Wellington Place",
   "occupants": [
     {
@@ -18,37 +15,22 @@
         "id": "tor-615-queen-st-w~the-food-alley",
         "type": "permanent",
         "status": "closed",
-        "d": [
-          "2025-08-01",
-          "2025-08-15"
-        ],
+        "d": ["2025-08-01", "2025-08-15"],
         "reasons": [],
-        "next": {
-          "name": "Queen's Bloc"
-        },
+        "next": { "name": "Queen's Bloc" },
         "evidence": [
-          {
-            "claim": "closed",
-            "src": 0
-          },
-          {
-            "claim": "successor",
-            "src": 1
-          }
+          { "claim": "closed", "src": 0 },
+          { "claim": "successor", "src": 1 }
         ]
       },
-      "src": [
-        0
-      ]
+      "src": [0]
     },
     {
       "name": "Queen's Bloc",
       "bt": "market",
       "from": "2025-09-16",
       "to": null,
-      "src": [
-        1
-      ]
+      "src": [1]
     }
   ],
   "sources": [

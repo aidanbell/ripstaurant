@@ -3,10 +3,7 @@
   "id": "tor-769-dundas-st-w",
   "city": "toronto",
   "addr": "769 Dundas St W",
-  "ll": [
-    -79.40704,
-    43.65209
-  ],
+  "ll": [-79.40704, 43.65209],
   "hood": "Trinity-Bellwoods",
   "occupants": [
     {
@@ -19,43 +16,23 @@
         "id": "tor-769-dundas-st-w~subway",
         "type": "permanent",
         "status": "closed",
-        "d": [
-          "2023-09-14",
-          "2025-07-09"
-        ],
+        "d": ["2023-09-14", "2025-07-09"],
         "reasons": [],
-        "next": {
-          "name": "Wonky Donkey"
-        },
+        "next": { "name": "Wonky Donkey" },
         "evidence": [
-          {
-            "claim": "closed",
-            "src": 1
-          },
-          {
-            "claim": "closed",
-            "src": 0
-          },
-          {
-            "claim": "successor",
-            "src": 0
-          }
+          { "claim": "closed", "src": 1 },
+          { "claim": "closed", "src": 0 },
+          { "claim": "successor", "src": 0 }
         ]
       },
-      "src": [
-        0,
-        1
-      ]
+      "src": [0, 1]
     },
     {
       "name": "Wonky Donkey",
       "bt": "restaurant",
       "from": "2025-09-22",
       "to": null,
-      "src": [
-        0,
-        1
-      ]
+      "src": [0, 1]
     }
   ],
   "sources": [

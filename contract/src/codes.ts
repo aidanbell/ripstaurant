@@ -15,7 +15,12 @@ export const EventType = z.enum([
 export type EventType = z.infer<typeof EventType>;
 
 /** Event types the site shows by default; the rest sit behind a filter toggle. */
-export const DEFAULT_VISIBLE_TYPES: readonly EventType[] = ["permanent", "relocated", "rebranded", "format_change"];
+export const DEFAULT_VISIBLE_TYPES: readonly EventType[] = [
+  "permanent",
+  "relocated",
+  "rebranded",
+  "format_change",
+];
 
 /**
  * Where the event stands. `retracted` exists in the database but is never exported,
@@ -70,5 +75,13 @@ export const SourceKind = z.enum([
 export type SourceKind = z.infer<typeof SourceKind>;
 
 /** What a piece of evidence supports. */
-export const Claim = z.enum(["closed", "announced", "reopened", "relocated", "rebranded", "successor", "reason"]);
+export const Claim = z.enum([
+  "closed",
+  "announced",
+  "reopened",
+  "relocated",
+  "rebranded",
+  "successor",
+  "reason",
+]);
 export type Claim = z.infer<typeof Claim>;

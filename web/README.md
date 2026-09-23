@@ -6,41 +6,52 @@ The site is fully static. It loads pre-built data files (a manifest, one list fi
 
 ## Setup
 
+`web` is a workspace package: install from the repo root (`bun install`). Tooling config comes from the root. The tsconfigs extend `../tsconfig.base.json`, `eslint.config.mjs` extends the root ESLint config with React rules, and Prettier and EditorConfig apply from the root.
+
 Still to do (Phase 1):
 
-1. Add `"web"` to `workspaces` in the root `package.json`, delete `web/bun.lock`, and run `bun install` from the repo root, so `@ripstaurant/contract` resolves locally.
-2. Add dependencies:
+1. Add dependencies:
    ```sh
    bun add --cwd web maplibre-gl pmtiles @ripstaurant/contract
    ```
-3. Serve sample data at `/data`:
+2. Serve sample data at `/data`:
    ```sh
    ln -s ../../contract/sample web/public/data            # curated sample (25 closures)
    # or: ln -s ../../contract/sample-synthetic web/public/data   (10k rows, perf testing)
    ```
-   Add `public/data` to `web/.gitignore`; exported data never goes in the repo.
+   The root `.gitignore` already excludes `data/`, so exported data never goes in the repo.
 
 ## Scripts
 
 Run from `web/`:
 
-| Command | What it does |
-|---|---|
-| `bun run dev` | Dev server with hot reload |
-| `bun run build` | Type-check and build to `dist/` |
+| Command           | What it does                       |
+| ----------------- | ---------------------------------- |
+| `bun run dev`     | Dev server with hot reload         |
+| `bun run build`   | Type-check and build to `dist/`    |
 | `bun run preview` | Serve the production build locally |
-| `bun run lint` | ESLint |
+
+Lint, format and type-check from the repo root: `bun run lint`, `bun run format`, `bun run typecheck`.
 
 ## Loading data
 
 ```ts
-import { CityList, LocationDetail, Manifest, locationPath } from "@ripstaurant/contract";
+import {
+  CityList,
+  LocationDetail,
+  Manifest,
+  locationPath,
+} from "@ripstaurant/contract";
 
-const manifest = Manifest.parse(await (await fetch("/data/manifest.json")).json());
+const manifest = Manifest.parse(
+  await (await fetch("/data/manifest.json")).json(),
+);
 const city = manifest.cities[0];
 const list = CityList.parse(await (await fetch(`/data/${city.list}`)).json());
 // later, when a closure is opened:
-const detail = LocationDetail.parse(await (await fetch(`/data/${locationPath(city.slug, row.loc)}`)).json());
+const detail = LocationDetail.parse(
+  await (await fetch(`/data/${locationPath(city.slug, row.loc)}`)).json(),
+);
 ```
 
 - `manifest.json` is always fetched fresh. List files are content-hashed, so they can be cached forever.

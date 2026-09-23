@@ -2,7 +2,15 @@
 // a location. Holds the address's full history and every source behind it.
 
 import { z } from "zod";
-import { BusinessType, Claim, EventType, ReasonCode, ReasonKind, SourceKind, Status } from "./codes";
+import {
+  BusinessType,
+  Claim,
+  EventType,
+  ReasonCode,
+  ReasonKind,
+  SourceKind,
+  Status,
+} from "./codes";
 import { CitySlug, DateRange, IsoDate, LngLat, Version } from "./common";
 
 /** Index into `LocationDetail.sources`. */
@@ -90,7 +98,11 @@ export const LocationDetail = z
       ...(o.event?.reasons.flatMap((r) => r.src) ?? []),
     ]);
     for (const r of refs) {
-      if (r >= n) ctx.addIssue({ code: "custom", message: `source ref ${r} out of range (${n} sources)` });
+      if (r >= n)
+        ctx.addIssue({
+          code: "custom",
+          message: `source ref ${r} out of range (${n} sources)`,
+        });
     }
   });
 export type LocationDetail = z.infer<typeof LocationDetail>;

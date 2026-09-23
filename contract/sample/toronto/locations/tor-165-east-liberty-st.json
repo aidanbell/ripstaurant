@@ -3,10 +3,7 @@
   "id": "tor-165-east-liberty-st",
   "city": "toronto",
   "addr": "165 East Liberty St",
-  "ll": [
-    -79.41722,
-    43.63831
-  ],
+  "ll": [-79.41722, 43.63831],
   "hood": "Fort York-Liberty Village",
   "occupants": [
     {
@@ -19,34 +16,21 @@
         "id": "tor-165-east-liberty-st~popeyes-louisiana-kitchen",
         "type": "permanent",
         "status": "closed",
-        "d": [
-          "2022-08-09",
-          "2022-12-31"
-        ],
+        "d": ["2022-08-09", "2022-12-31"],
         "reasons": [
           {
             "code": "rent_lease",
             "kind": "stated",
             "summary": "Landlord seized the unit over more than $100,000 in unpaid rent",
-            "src": [
-              1
-            ]
+            "src": [1]
           }
         ],
         "evidence": [
-          {
-            "claim": "closed",
-            "src": 1
-          },
-          {
-            "claim": "closed",
-            "src": 0
-          }
+          { "claim": "closed", "src": 1 },
+          { "claim": "closed", "src": 0 }
         ]
       },
-      "src": [
-        0
-      ]
+      "src": [0]
     }
   ],
   "sources": [

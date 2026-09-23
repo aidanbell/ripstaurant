@@ -3,19 +3,14 @@
   "id": "tor-176-dupont-st",
   "city": "toronto",
   "addr": "176 Dupont St",
-  "ll": [
-    -79.40367,
-    43.67574
-  ],
+  "ll": [-79.40367, 43.67574],
   "hood": "Annex",
   "occupants": [
     {
       "name": "People's Foods",
       "from": "2005-07-11",
       "to": "2012-11-02",
-      "src": [
-        0
-      ]
+      "src": [0]
     },
     {
       "name": "Rose and Sons",
@@ -27,41 +22,23 @@
         "id": "tor-176-dupont-st~rose-and-sons",
         "type": "permanent",
         "status": "closed",
-        "d": [
-          "2022-06-26",
-          "2022-06-26"
-        ],
+        "d": ["2022-06-26", "2022-06-26"],
         "reasons": [
           {
             "code": "unknown",
             "kind": "stated",
             "summary": "Owner chose to focus on his other restaurants; said he wasn't blaming COVID or inflation",
-            "src": [
-              1
-            ]
+            "src": [1]
           }
         ],
-        "next": {
-          "name": "Chilliy Pepper"
-        },
+        "next": { "name": "Chilliy Pepper" },
         "evidence": [
-          {
-            "claim": "closed",
-            "src": 1
-          },
-          {
-            "claim": "closed",
-            "src": 0
-          },
-          {
-            "claim": "successor",
-            "src": 0
-          }
+          { "claim": "closed", "src": 1 },
+          { "claim": "closed", "src": 0 },
+          { "claim": "successor", "src": 0 }
         ]
       },
-      "src": [
-        0
-      ]
+      "src": [0]
     },
     {
       "name": "Big Crow",
@@ -72,40 +49,25 @@
         "id": "tor-176-dupont-st~big-crow",
         "type": "permanent",
         "status": "closed",
-        "d": [
-          "2022-06-26",
-          "2022-06-26"
-        ],
+        "d": ["2022-06-26", "2022-06-26"],
         "reasons": [
           {
             "code": "unknown",
             "kind": "stated",
             "summary": "Owner chose to focus on his other restaurants; said he wasn't blaming COVID or inflation",
-            "src": [
-              1
-            ]
+            "src": [1]
           }
         ],
-        "evidence": [
-          {
-            "claim": "closed",
-            "src": 1
-          }
-        ]
+        "evidence": [{ "claim": "closed", "src": 1 }]
       },
-      "src": [
-        1
-      ]
+      "src": [1]
     },
     {
       "name": "Chilliy Pepper",
       "bt": "restaurant",
       "from": "2023-06-19",
       "to": null,
-      "src": [
-        0,
-        2
-      ]
+      "src": [0, 2]
     }
   ],
   "sources": [

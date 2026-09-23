@@ -3,10 +3,7 @@
   "id": "tor-184-augusta-ave",
   "city": "toronto",
   "addr": "184 Augusta Ave",
-  "ll": [
-    -79.4019,
-    43.65402
-  ],
+  "ll": [-79.4019, 43.65402],
   "hood": "Kensington-Chinatown",
   "occupants": [
     {
@@ -19,54 +16,35 @@
         "id": "tor-184-augusta-ave~amadeus-restaurant",
         "type": "permanent",
         "status": "closed",
-        "d": [
-          "2025-02-04",
-          "2025-02-04"
-        ],
+        "d": ["2025-02-04", "2025-02-04"],
         "reasons": [
           {
             "code": "owner_retirement",
             "kind": "stated",
             "summary": "Owner, 75, is retiring to spend time with family",
-            "src": [
-              1
-            ]
+            "src": [1]
           },
           {
             "code": "sale",
             "kind": "stated",
             "summary": "Owners decided to sell the restaurant",
-            "src": [
-              1
-            ]
+            "src": [1]
           }
         ],
-        "next": {
-          "name": "Burdock Brewery Kensington Tavern"
-        },
+        "next": { "name": "Burdock Brewery Kensington Tavern" },
         "evidence": [
-          {
-            "claim": "closed",
-            "src": 1
-          },
-          {
-            "claim": "successor",
-            "src": 0
-          }
+          { "claim": "closed", "src": 1 },
+          { "claim": "successor", "src": 0 }
         ]
       },
-      "src": [
-        0
-      ]
+      "src": [0]
     },
     {
       "name": "Burdock Brewery Kensington Tavern",
       "bt": "bar",
       "from": "2025-06-13",
       "to": null,
-      "src": [
-        0
-      ]
+      "src": [0]
     }
   ],
   "sources": [

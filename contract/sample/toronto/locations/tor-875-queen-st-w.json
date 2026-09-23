@@ -3,10 +3,7 @@
   "id": "tor-875-queen-st-w",
   "city": "toronto",
   "addr": "875 Queen St W",
-  "ll": [
-    -79.4113,
-    43.64562
-  ],
+  "ll": [-79.4113, 43.64562],
   "hood": "West Queen West",
   "occupants": [
     {
@@ -19,43 +16,23 @@
         "id": "tor-875-queen-st-w~noce",
         "type": "permanent",
         "status": "closed",
-        "d": [
-          "2024-09-01",
-          "2024-11-30"
-        ],
+        "d": ["2024-09-01", "2024-11-30"],
         "reasons": [],
-        "next": {
-          "name": "Little Ese"
-        },
+        "next": { "name": "Little Ese" },
         "evidence": [
-          {
-            "claim": "closed",
-            "src": 2
-          },
-          {
-            "claim": "closed",
-            "src": 0
-          },
-          {
-            "claim": "successor",
-            "src": 0
-          }
+          { "claim": "closed", "src": 2 },
+          { "claim": "closed", "src": 0 },
+          { "claim": "successor", "src": 0 }
         ]
       },
-      "src": [
-        0,
-        1
-      ]
+      "src": [0, 1]
     },
     {
       "name": "Little Ese",
       "bt": "restaurant",
       "from": "2025-02-11",
       "to": null,
-      "src": [
-        0,
-        1
-      ]
+      "src": [0, 1]
     }
   ],
   "sources": [

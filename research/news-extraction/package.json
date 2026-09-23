@@ -1,13 +1,9 @@
 {
-  "name": "news-extraction",
-  "module": "index.ts",
-  "type": "module",
+  "name": "@ripstaurant/news-extraction",
   "private": true,
-  "devDependencies": {
-    "@types/bun": "latest"
-  },
-  "peerDependencies": {
-    "typescript": "^7"
+  "type": "module",
+  "scripts": {
+    "typecheck": "tsc -p . --noEmit"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.128.0",

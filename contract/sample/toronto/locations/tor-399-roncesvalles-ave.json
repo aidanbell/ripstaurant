@@ -3,10 +3,7 @@
   "id": "tor-399-roncesvalles-ave",
   "city": "toronto",
   "addr": "399 Roncesvalles Ave",
-  "ll": [
-    -79.45057,
-    43.65089
-  ],
+  "ll": [-79.45057, 43.65089],
   "hood": "Roncesvalles",
   "occupants": [
     {
@@ -19,18 +16,13 @@
         "id": "tor-399-roncesvalles-ave~sweet-thrills",
         "type": "relocated",
         "status": "closed",
-        "d": [
-          "2022-07-31",
-          "2022-07-31"
-        ],
+        "d": ["2022-07-31", "2022-07-31"],
         "reasons": [
           {
             "code": "rent_lease",
             "kind": "stated",
             "summary": "Landlord suddenly raised the rent beyond what the store could afford",
-            "src": [
-              1
-            ]
+            "src": [1]
           }
         ],
         "next": {
@@ -39,23 +31,12 @@
           "addr": "367 Roncesvalles Ave"
         },
         "evidence": [
-          {
-            "claim": "closed",
-            "src": 1
-          },
-          {
-            "claim": "closed",
-            "src": 0
-          },
-          {
-            "claim": "relocated",
-            "src": 2
-          }
+          { "claim": "closed", "src": 1 },
+          { "claim": "closed", "src": 0 },
+          { "claim": "relocated", "src": 2 }
         ]
       },
-      "src": [
-        0
-      ]
+      "src": [0]
     }
   ],
   "sources": [

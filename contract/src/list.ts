@@ -3,7 +3,16 @@
 
 import { z } from "zod";
 import { BusinessType, EventType, ReasonCode, Status } from "./codes";
-import { BBox, CitySlug, DateRange, IsoDate, LngLat, Version, inBBox, sortDate } from "./common";
+import {
+  BBox,
+  CitySlug,
+  DateRange,
+  IsoDate,
+  LngLat,
+  Version,
+  inBBox,
+  sortDate,
+} from "./common";
 
 export const City = z.object({
   slug: CitySlug,
@@ -53,14 +62,21 @@ export const CityList = z
   .superRefine((list, ctx) => {
     const ids = new Set<string>();
     list.closures.forEach((row, i) => {
-      const at = (msg: string) => ctx.addIssue({ code: "custom", path: ["closures", i], message: msg });
+      const at = (msg: string) =>
+        ctx.addIssue({ code: "custom", path: ["closures", i], message: msg });
       if (ids.has(row.id)) at(`duplicate id ${row.id}`);
       ids.add(row.id);
-      if (row.hood >= list.hoods.length) at(`hood index ${row.hood} out of range`);
-      if (!inBBox(row.ll, list.city.bbox)) at(`${row.name} is outside the city bbox`);
-      if (row.status !== "announced" && row.d[0] === null && row.d[1] === null) at(`${row.name}: a ${row.status} event needs at least one date`);
+      if (row.hood >= list.hoods.length)
+        at(`hood index ${row.hood} out of range`);
+      if (!inBBox(row.ll, list.city.bbox))
+        at(`${row.name} is outside the city bbox`);
+      if (row.status !== "announced" && row.d[0] === null && row.d[1] === null)
+        at(`${row.name}: a ${row.status} event needs at least one date`);
       const date = sortDate(row.d);
-      if (date !== null && date < list.since) at(`${row.name} (${date}) is before the coverage window (${list.since})`);
+      if (date !== null && date < list.since)
+        at(
+          `${row.name} (${date}) is before the coverage window (${list.since})`,
+        );
     });
   });
 export type CityList = z.infer<typeof CityList>;

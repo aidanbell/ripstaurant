@@ -3,19 +3,14 @@
   "id": "tor-1276-queen-st-e",
   "city": "toronto",
   "addr": "1276 Queen St E",
-  "ll": [
-    -79.32884,
-    43.66385
-  ],
+  "ll": [-79.32884, 43.66385],
   "hood": "South Riverdale",
   "occupants": [
     {
       "name": "The Hummingbird Caribbean Cuisine",
       "from": "2012-10-23",
       "to": "2015-01-23",
-      "src": [
-        0
-      ]
+      "src": [0]
     },
     {
       "name": "Daddy's Chicken",
@@ -27,31 +22,18 @@
         "id": "tor-1276-queen-st-e~daddys-chicken",
         "type": "permanent",
         "status": "closed",
-        "d": [
-          "2025-12-20",
-          "2026-02-28"
-        ],
+        "d": ["2025-12-20", "2026-02-28"],
         "reasons": [
           {
             "code": "rent_lease",
             "kind": "stated",
             "summary": "Owner says the landlord evicted them after they refused to pay for a furnace replacement",
-            "src": [
-              2
-            ]
+            "src": [2]
           }
         ],
-        "evidence": [
-          {
-            "claim": "closed",
-            "src": 2
-          }
-        ]
+        "evidence": [{ "claim": "closed", "src": 2 }]
       },
-      "src": [
-        0,
-        1
-      ]
+      "src": [0, 1]
     }
   ],
   "sources": [

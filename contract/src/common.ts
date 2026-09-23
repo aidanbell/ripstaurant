@@ -14,7 +14,10 @@ export const CitySlug = z.string().regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/);
  * `[longitude, latitude]`, GeoJSON order, rounded to 5 decimals (~1 m).
  * Longitude first is easy to get backwards; MapLibre expects this order.
  */
-export const LngLat = z.tuple([z.number().min(-180).max(180), z.number().min(-90).max(90)]);
+export const LngLat = z.tuple([
+  z.number().min(-180).max(180),
+  z.number().min(-90).max(90),
+]);
 export type LngLat = z.infer<typeof LngLat>;
 
 /** `[west, south, east, north]` */
@@ -33,7 +36,10 @@ export type BBox = z.infer<typeof BBox>;
  */
 export const DateRange = z
   .tuple([IsoDate.nullable(), IsoDate.nullable()])
-  .refine(([from, to]) => from === null || to === null || from <= to, "range start is after its end");
+  .refine(
+    ([from, to]) => from === null || to === null || from <= to,
+    "range start is after its end",
+  );
 export type DateRange = z.infer<typeof DateRange>;
 
 /** The date a range sorts by: its latest known end. */

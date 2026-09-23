@@ -3,10 +3,7 @@
   "id": "tor-820-the-queensway",
   "city": "toronto",
   "addr": "820 The Queensway",
-  "ll": [
-    -79.50831,
-    43.62524
-  ],
+  "ll": [-79.50831, 43.62524],
   "hood": "Stonegate-Queensway",
   "occupants": [
     {
@@ -20,39 +17,24 @@
         "id": "tor-820-the-queensway~dinos-wood-burning-pizza",
         "type": "permanent",
         "status": "announced",
-        "d": [
-          null,
-          null
-        ],
+        "d": [null, null],
         "reasons": [
           {
             "code": "sale",
             "kind": "stated",
             "summary": "This location has been put up for sale",
-            "src": [
-              2
-            ]
+            "src": [2]
           },
           {
             "code": "financial",
             "kind": "stated",
             "summary": "Owner cited rising costs, weaker spending and competition from chains",
-            "src": [
-              2
-            ]
+            "src": [2]
           }
         ],
-        "evidence": [
-          {
-            "claim": "announced",
-            "src": 2
-          }
-        ]
+        "evidence": [{ "claim": "announced", "src": 2 }]
       },
-      "src": [
-        0,
-        1
-      ]
+      "src": [0, 1]
     }
   ],
   "sources": [

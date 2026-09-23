@@ -3,27 +3,20 @@
   "id": "tor-382-college-st",
   "city": "toronto",
   "addr": "382 College St",
-  "ll": [
-    -79.40517,
-    43.65698
-  ],
+  "ll": [-79.40517, 43.65698],
   "hood": "Kensington-Chinatown",
   "occupants": [
     {
       "name": "Windup Bird",
       "from": "2013-09-16",
       "to": "2016-11-21",
-      "src": [
-        0
-      ]
+      "src": [0]
     },
     {
       "name": "Montreal Bar & Grill",
       "from": "2016-11-21",
       "to": "2017-09-26",
-      "src": [
-        0
-      ]
+      "src": [0]
     },
     {
       "name": "The Hogtown Vegan",
@@ -35,22 +28,11 @@
         "id": "tor-382-college-st~the-hogtown-vegan",
         "type": "permanent",
         "status": "announced",
-        "d": [
-          "2026-09-27",
-          "2026-09-27"
-        ],
+        "d": ["2026-09-27", "2026-09-27"],
         "reasons": [],
-        "evidence": [
-          {
-            "claim": "announced",
-            "src": 2
-          }
-        ]
+        "evidence": [{ "claim": "announced", "src": 2 }]
       },
-      "src": [
-        0,
-        1
-      ]
+      "src": [0, 1]
     }
   ],
   "sources": [

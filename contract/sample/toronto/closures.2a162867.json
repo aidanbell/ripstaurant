@@ -3,16 +3,8 @@
   "city": {
     "slug": "toronto",
     "name": "Toronto",
-    "center": [
-      -79.3832,
-      43.6532
-    ],
-    "bbox": [
-      -79.6393,
-      43.581,
-      -79.1153,
-      43.8555
-    ]
+    "center": [-79.3832, 43.6532],
+    "bbox": [-79.6393, 43.581, -79.1153, 43.8555]
   },
   "generated": "2026-09-23T00:00:00.000Z",
   "since": "2022-03-01",
@@ -183,20 +175,12 @@
       "name": "Buvette Pacey",
       "addr": "141 Berkeley St",
       "hood": 93,
-      "ll": [
-        -79.36538,
-        43.65498
-      ],
+      "ll": [-79.36538, 43.65498],
       "type": "permanent",
       "status": "announced",
-      "d": [
-        null,
-        null
-      ],
+      "d": [null, null],
       "bt": "cafe",
-      "rs": [
-        "financial"
-      ],
+      "rs": ["financial"],
       "yrs": 3
     },
     {
@@ -205,21 +189,12 @@
       "name": "Dino's Wood Burning Pizza",
       "addr": "820 The Queensway",
       "hood": 128,
-      "ll": [
-        -79.50831,
-        43.62524
-      ],
+      "ll": [-79.50831, 43.62524],
       "type": "permanent",
       "status": "announced",
-      "d": [
-        null,
-        null
-      ],
+      "d": [null, null],
       "bt": "restaurant",
-      "rs": [
-        "sale",
-        "financial"
-      ],
+      "rs": ["sale", "financial"],
       "yrs": 20,
       "chain": true
     },
@@ -229,16 +204,10 @@
       "name": "The Hogtown Vegan",
       "addr": "382 College St",
       "hood": 74,
-      "ll": [
-        -79.40517,
-        43.65698
-      ],
+      "ll": [-79.40517, 43.65698],
       "type": "permanent",
       "status": "announced",
-      "d": [
-        "2026-09-27",
-        "2026-09-27"
-      ],
+      "d": ["2026-09-27", "2026-09-27"],
       "bt": "restaurant",
       "rs": [],
       "yrs": 15
@@ -249,16 +218,10 @@
       "name": "Famiglia Baldassarre",
       "addr": "116 Geary Ave, Unit 108A",
       "hood": 71,
-      "ll": [
-        -79.43483,
-        43.67053
-      ],
+      "ll": [-79.43483, 43.67053],
       "type": "format_change",
       "status": "closed",
-      "d": [
-        "2026-08-14",
-        "2026-08-14"
-      ],
+      "d": ["2026-08-14", "2026-08-14"],
       "bt": "take_out",
       "rs": [],
       "yrs": 9
@@ -269,20 +232,12 @@
       "name": "Daddy's Chicken",
       "addr": "1276 Queen St E",
       "hood": 124,
-      "ll": [
-        -79.32884,
-        43.66385
-      ],
+      "ll": [-79.32884, 43.66385],
       "type": "permanent",
       "status": "closed",
-      "d": [
-        "2025-12-20",
-        "2026-02-28"
-      ],
+      "d": ["2025-12-20", "2026-02-28"],
       "bt": "restaurant",
-      "rs": [
-        "rent_lease"
-      ],
+      "rs": ["rent_lease"],
       "yrs": 10
     },
     {
@@ -291,21 +246,12 @@
       "name": "Taverne Tamblyn",
       "addr": "1426 Danforth Ave",
       "hood": 30,
-      "ll": [
-        -79.3271,
-        43.68289
-      ],
+      "ll": [-79.3271, 43.68289],
       "type": "permanent",
       "status": "closed",
-      "d": [
-        "2026-01-25",
-        "2026-01-25"
-      ],
+      "d": ["2026-01-25", "2026-01-25"],
       "bt": "restaurant",
-      "rs": [
-        "sale",
-        "financial"
-      ],
+      "rs": ["sale", "financial"],
       "yrs": 4,
       "next": "Loukoumania Cafe"
     },
@@ -315,16 +261,10 @@
       "name": "By The Way",
       "addr": "400 Bloor St W",
       "hood": 3,
-      "ll": [
-        -79.40756,
-        43.66599
-      ],
+      "ll": [-79.40756, 43.66599],
       "type": "permanent",
       "status": "closed",
-      "d": [
-        "2025-08-31",
-        "2025-08-31"
-      ],
+      "d": ["2025-08-31", "2025-08-31"],
       "bt": "restaurant",
       "rs": [],
       "yrs": 40,
@@ -336,16 +276,10 @@
       "name": "The Food Alley",
       "addr": "615 Queen St W",
       "hood": 137,
-      "ll": [
-        -79.40256,
-        43.64728
-      ],
+      "ll": [-79.40256, 43.64728],
       "type": "permanent",
       "status": "closed",
-      "d": [
-        "2025-08-01",
-        "2025-08-15"
-      ],
+      "d": ["2025-08-01", "2025-08-15"],
       "bt": "market",
       "rs": [],
       "next": "Queen's Bloc"
@@ -356,16 +290,10 @@
       "name": "Subway",
       "addr": "769 Dundas St W",
       "hood": 134,
-      "ll": [
-        -79.40704,
-        43.65209
-      ],
+      "ll": [-79.40704, 43.65209],
       "type": "permanent",
       "status": "closed",
-      "d": [
-        "2023-09-14",
-        "2025-07-09"
-      ],
+      "d": ["2023-09-14", "2025-07-09"],
       "bt": "restaurant",
       "rs": [],
       "chain": true,
@@ -377,16 +305,10 @@
       "name": "Mehfill Indian Cuisine",
       "addr": "2120 Queen St E",
       "hood": 131,
-      "ll": [
-        -79.29476,
-        43.67136
-      ],
+      "ll": [-79.29476, 43.67136],
       "type": "permanent",
       "status": "closed",
-      "d": [
-        null,
-        "2025-07-02"
-      ],
+      "d": [null, "2025-07-02"],
       "bt": "restaurant",
       "rs": [],
       "chain": true,
@@ -398,20 +320,12 @@
       "name": "Bar St. Lo",
       "addr": "26 Market St",
       "hood": 125,
-      "ll": [
-        -79.37213,
-        43.64901
-      ],
+      "ll": [-79.37213, 43.64901],
       "type": "permanent",
       "status": "closed",
-      "d": [
-        "2025-04-27",
-        "2025-04-27"
-      ],
+      "d": ["2025-04-27", "2025-04-27"],
       "bt": "bar",
-      "rs": [
-        "sale"
-      ],
+      "rs": ["sale"],
       "yrs": 4,
       "next": "Anejo Restaurant"
     },
@@ -421,21 +335,12 @@
       "name": "Amadeu's Restaurant",
       "addr": "184 Augusta Ave",
       "hood": 74,
-      "ll": [
-        -79.4019,
-        43.65402
-      ],
+      "ll": [-79.4019, 43.65402],
       "type": "permanent",
       "status": "closed",
-      "d": [
-        "2025-02-04",
-        "2025-02-04"
-      ],
+      "d": ["2025-02-04", "2025-02-04"],
       "bt": "restaurant",
-      "rs": [
-        "owner_retirement",
-        "sale"
-      ],
+      "rs": ["owner_retirement", "sale"],
       "yrs": 36,
       "next": "Burdock Brewery Kensington Tavern"
     },
@@ -445,16 +350,10 @@
       "name": "Noce",
       "addr": "875 Queen St W",
       "hood": 140,
-      "ll": [
-        -79.4113,
-        43.64562
-      ],
+      "ll": [-79.4113, 43.64562],
       "type": "permanent",
       "status": "closed",
-      "d": [
-        "2024-09-01",
-        "2024-11-30"
-      ],
+      "d": ["2024-09-01", "2024-11-30"],
       "bt": "restaurant",
       "rs": [],
       "yrs": 28,
@@ -466,16 +365,10 @@
       "name": "Ghost Chicken",
       "addr": "74 Ossington Ave",
       "hood": 134,
-      "ll": [
-        -79.4198,
-        43.64582
-      ],
+      "ll": [-79.4198, 43.64582],
       "type": "format_change",
       "status": "closed",
-      "d": [
-        "2024-06-01",
-        "2024-06-30"
-      ],
+      "d": ["2024-06-01", "2024-06-30"],
       "bt": "restaurant",
       "rs": [],
       "yrs": 2,
@@ -487,16 +380,10 @@
       "name": "Sarah's Cafe and Bar",
       "addr": "1426 Danforth Ave",
       "hood": 30,
-      "ll": [
-        -79.3271,
-        43.68289
-      ],
+      "ll": [-79.3271, 43.68289],
       "type": "permanent",
       "status": "closed",
-      "d": [
-        "2022-04-13",
-        "2024-05-02"
-      ],
+      "d": ["2022-04-13", "2024-05-02"],
       "bt": "bar",
       "rs": [],
       "next": "Taverne Tamblyn"
@@ -507,16 +394,10 @@
       "name": "Wahlburgers",
       "addr": "46 Blue Jays Way",
       "hood": 137,
-      "ll": [
-        -79.39211,
-        43.64553
-      ],
+      "ll": [-79.39211, 43.64553],
       "type": "permanent",
       "status": "closed",
-      "d": [
-        "2024-01-01",
-        "2024-01-16"
-      ],
+      "d": ["2024-01-01", "2024-01-16"],
       "bt": "restaurant",
       "rs": [],
       "yrs": 9,
@@ -528,20 +409,12 @@
       "name": "Swiss Chalet",
       "addr": "3150 Dufferin St, Unit 102",
       "hood": 157,
-      "ll": [
-        -79.4556,
-        43.71717
-      ],
+      "ll": [-79.4556, 43.71717],
       "type": "temporary",
       "status": "reopened",
-      "d": [
-        "2023-10-04",
-        "2023-10-04"
-      ],
+      "d": ["2023-10-04", "2023-10-04"],
       "bt": "restaurant",
-      "rs": [
-        "health_enforcement"
-      ],
+      "rs": ["health_enforcement"],
       "chain": true
     },
     {
@@ -550,22 +423,12 @@
       "name": "Brock Sandwich",
       "addr": "1260 Bloor St W",
       "hood": 71,
-      "ll": [
-        -79.44055,
-        43.65899
-      ],
+      "ll": [-79.44055, 43.65899],
       "type": "permanent",
       "status": "closed",
-      "d": [
-        "2023-06-24",
-        "2023-06-24"
-      ],
+      "d": ["2023-06-24", "2023-06-24"],
       "bt": "take_out",
-      "rs": [
-        "rent_lease",
-        "financial",
-        "pandemic"
-      ],
+      "rs": ["rent_lease", "financial", "pandemic"],
       "yrs": 10,
       "next": "IBET Sushi"
     },
@@ -575,20 +438,12 @@
       "name": "Le Cafe Michi",
       "addr": "1802 Pharmacy Ave",
       "hood": 129,
-      "ll": [
-        -79.31777,
-        43.7756
-      ],
+      "ll": [-79.31777, 43.7756],
       "type": "permanent",
       "status": "closed",
-      "d": [
-        "2023-01-31",
-        "2023-01-31"
-      ],
+      "d": ["2023-01-31", "2023-01-31"],
       "bt": "restaurant",
-      "rs": [
-        "owner_retirement"
-      ]
+      "rs": ["owner_retirement"]
     },
     {
       "id": "tor-165-east-liberty-st~popeyes-louisiana-kitchen",
@@ -596,20 +451,12 @@
       "name": "Popeyes Louisiana Kitchen",
       "addr": "165 East Liberty St",
       "hood": 52,
-      "ll": [
-        -79.41722,
-        43.63831
-      ],
+      "ll": [-79.41722, 43.63831],
       "type": "permanent",
       "status": "closed",
-      "d": [
-        "2022-08-09",
-        "2022-12-31"
-      ],
+      "d": ["2022-08-09", "2022-12-31"],
       "bt": "take_out",
-      "rs": [
-        "rent_lease"
-      ],
+      "rs": ["rent_lease"],
       "chain": true
     },
     {
@@ -618,16 +465,10 @@
       "name": "Green Basil",
       "addr": "2120 Queen St E",
       "hood": 131,
-      "ll": [
-        -79.29476,
-        43.67136
-      ],
+      "ll": [-79.29476, 43.67136],
       "type": "permanent",
       "status": "closed",
-      "d": [
-        "2022-10-30",
-        "2022-10-30"
-      ],
+      "d": ["2022-10-30", "2022-10-30"],
       "bt": "restaurant",
       "rs": [],
       "yrs": 15,
@@ -639,16 +480,10 @@
       "name": "Kabul Naan Kabob",
       "addr": "224 Parliament St",
       "hood": 93,
-      "ll": [
-        -79.36532,
-        43.65715
-      ],
+      "ll": [-79.36532, 43.65715],
       "type": "permanent",
       "status": "closed",
-      "d": [
-        null,
-        "2022-09-08"
-      ],
+      "d": [null, "2022-09-08"],
       "bt": "restaurant",
       "rs": [],
       "next": "Wanaag Restaurant"
@@ -659,20 +494,12 @@
       "name": "Sweet Thrills",
       "addr": "399 Roncesvalles Ave",
       "hood": 117,
-      "ll": [
-        -79.45057,
-        43.65089
-      ],
+      "ll": [-79.45057, 43.65089],
       "type": "relocated",
       "status": "closed",
-      "d": [
-        "2022-07-31",
-        "2022-07-31"
-      ],
+      "d": ["2022-07-31", "2022-07-31"],
       "bt": "food_retail",
-      "rs": [
-        "rent_lease"
-      ],
+      "rs": ["rent_lease"],
       "yrs": 24,
       "next": "Sweet Thrills"
     },
@@ -682,16 +509,10 @@
       "name": "Big Crow",
       "addr": "176 Dupont St",
       "hood": 3,
-      "ll": [
-        -79.40367,
-        43.67574
-      ],
+      "ll": [-79.40367, 43.67574],
       "type": "permanent",
       "status": "closed",
-      "d": [
-        "2022-06-26",
-        "2022-06-26"
-      ],
+      "d": ["2022-06-26", "2022-06-26"],
       "bt": "restaurant",
       "rs": []
     },
@@ -701,16 +522,10 @@
       "name": "Rose and Sons",
       "addr": "176 Dupont St",
       "hood": 3,
-      "ll": [
-        -79.40367,
-        43.67574
-      ],
+      "ll": [-79.40367, 43.67574],
       "type": "permanent",
       "status": "closed",
-      "d": [
-        "2022-06-26",
-        "2022-06-26"
-      ],
+      "d": ["2022-06-26", "2022-06-26"],
       "bt": "restaurant",
       "rs": [],
       "yrs": 10,

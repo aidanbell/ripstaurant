@@ -3,10 +3,7 @@
   "id": "tor-1260-bloor-st-w",
   "city": "toronto",
   "addr": "1260 Bloor St W",
-  "ll": [
-    -79.44055,
-    43.65899
-  ],
+  "ll": [-79.44055, 43.65899],
   "hood": "Junction-Wallace Emerson",
   "occupants": [
     {
@@ -19,66 +16,42 @@
         "id": "tor-1260-bloor-st-w~brock-sandwich",
         "type": "permanent",
         "status": "closed",
-        "d": [
-          "2023-06-24",
-          "2023-06-24"
-        ],
+        "d": ["2023-06-24", "2023-06-24"],
         "reasons": [
           {
             "code": "rent_lease",
             "kind": "stated",
             "summary": "Month-to-month lease with a large increase expected after landlord renovations",
-            "src": [
-              1
-            ]
+            "src": [1]
           },
           {
             "code": "financial",
             "kind": "stated",
             "summary": "Pandemic-era debt and food costs up 25 to 35 per cent",
-            "src": [
-              1
-            ]
+            "src": [1]
           },
           {
             "code": "pandemic",
             "kind": "stated",
             "summary": "Debt built up during COVID closures",
-            "src": [
-              1
-            ]
+            "src": [1]
           }
         ],
-        "next": {
-          "name": "IBET Sushi"
-        },
+        "next": { "name": "IBET Sushi" },
         "evidence": [
-          {
-            "claim": "closed",
-            "src": 1
-          },
-          {
-            "claim": "closed",
-            "src": 0
-          },
-          {
-            "claim": "successor",
-            "src": 0
-          }
+          { "claim": "closed", "src": 1 },
+          { "claim": "closed", "src": 0 },
+          { "claim": "successor", "src": 0 }
         ]
       },
-      "src": [
-        0
-      ]
+      "src": [0]
     },
     {
       "name": "IBET Sushi",
       "bt": "restaurant",
       "from": "2023-10-05",
       "to": null,
-      "src": [
-        0
-      ]
+      "src": [0]
     }
   ],
   "sources": [

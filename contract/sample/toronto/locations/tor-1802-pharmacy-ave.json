@@ -3,10 +3,7 @@
   "id": "tor-1802-pharmacy-ave",
   "city": "toronto",
   "addr": "1802 Pharmacy Ave",
-  "ll": [
-    -79.31777,
-    43.7756
-  ],
+  "ll": [-79.31777, 43.7756],
   "hood": "Tam O'Shanter-Sullivan",
   "occupants": [
     {
@@ -18,34 +15,21 @@
         "id": "tor-1802-pharmacy-ave~le-cafe-michi",
         "type": "permanent",
         "status": "closed",
-        "d": [
-          "2023-01-31",
-          "2023-01-31"
-        ],
+        "d": ["2023-01-31", "2023-01-31"],
         "reasons": [
           {
             "code": "owner_retirement",
             "kind": "stated",
             "summary": "Longtime staff are retiring and the owners' children aren't taking over",
-            "src": [
-              1
-            ]
+            "src": [1]
           }
         ],
         "evidence": [
-          {
-            "claim": "closed",
-            "src": 1
-          },
-          {
-            "claim": "closed",
-            "src": 0
-          }
+          { "claim": "closed", "src": 1 },
+          { "claim": "closed", "src": 0 }
         ]
       },
-      "src": [
-        0
-      ]
+      "src": [0]
     }
   ],
   "sources": [

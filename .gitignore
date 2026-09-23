@@ -12,9 +12,29 @@ data/
 *.jsonl
 *.zip
 
-# build output
-dist/
-.DS_Store
-
 # synthetic perf-test export (bun run sample:synthetic)
 contract/sample-synthetic/
+
+# build output and caches
+dist/
+dist-ssr/
+coverage/
+*.tsbuildinfo
+.eslintcache
+.cache/
+*.local
+
+# logs
+logs/
+*.log
+
+# editors and OS
+.vscode/*
+!.vscode/extensions.json
+.idea/
+.DS_Store
+*.suo
+*.sw?
+
+# planning docs
+docs/
