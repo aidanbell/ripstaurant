@@ -1,0 +1,72 @@
+{
+  "v": 1,
+  "id": "tor-116-geary-ave-unit-108a",
+  "city": "toronto",
+  "addr": "116 Geary Ave, Unit 108A",
+  "ll": [
+    -79.43483,
+    43.67053
+  ],
+  "hood": "Junction-Wallace Emerson",
+  "occupants": [
+    {
+      "name": "Famiglia Baldassarre",
+      "bt": "take_out",
+      "from": "2017-08-31",
+      "to": "2026-08-14",
+      "yrs": 9,
+      "event": {
+        "id": "tor-116-geary-ave-unit-108a~famiglia-baldassarre",
+        "type": "format_change",
+        "status": "closed",
+        "d": [
+          "2026-08-14",
+          "2026-08-14"
+        ],
+        "reasons": [
+          {
+            "code": "unknown",
+            "kind": "stated",
+            "summary": "Ending lunch service to focus on wholesale pasta; the business continues",
+            "src": [
+              2
+            ]
+          }
+        ],
+        "evidence": [
+          {
+            "claim": "announced",
+            "src": 2
+          }
+        ]
+      },
+      "src": [
+        0,
+        1
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "kind": "dataset",
+      "title": "Municipal Licensing and Standards - Business Licences and Permits",
+      "publisher": "City of Toronto",
+      "url": "https://open.toronto.ca/dataset/municipal-licensing-and-standards-business-licences-and-permits/",
+      "date": "2026-09-23"
+    },
+    {
+      "kind": "dataset",
+      "title": "DineSafe",
+      "publisher": "City of Toronto",
+      "url": "https://open.toronto.ca/dataset/dinesafe/",
+      "date": "2026-09-23"
+    },
+    {
+      "kind": "news_article",
+      "title": "Toronto's best pasta restaurant just announced it's closing soon",
+      "publisher": "blogTO",
+      "url": "https://www.blogto.com/eat_drink/2026/07/famiglia-balsassarre-toronto-closing/",
+      "date": "2026-07-15"
+    }
+  ]
+}

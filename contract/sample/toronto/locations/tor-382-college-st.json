@@ -1,0 +1,79 @@
+{
+  "v": 1,
+  "id": "tor-382-college-st",
+  "city": "toronto",
+  "addr": "382 College St",
+  "ll": [
+    -79.40517,
+    43.65698
+  ],
+  "hood": "Kensington-Chinatown",
+  "occupants": [
+    {
+      "name": "Windup Bird",
+      "from": "2013-09-16",
+      "to": "2016-11-21",
+      "src": [
+        0
+      ]
+    },
+    {
+      "name": "Montreal Bar & Grill",
+      "from": "2016-11-21",
+      "to": "2017-09-26",
+      "src": [
+        0
+      ]
+    },
+    {
+      "name": "The Hogtown Vegan",
+      "bt": "restaurant",
+      "from": "2017-09-26",
+      "to": "2026-09-27",
+      "yrs": 15,
+      "event": {
+        "id": "tor-382-college-st~the-hogtown-vegan",
+        "type": "permanent",
+        "status": "announced",
+        "d": [
+          "2026-09-27",
+          "2026-09-27"
+        ],
+        "reasons": [],
+        "evidence": [
+          {
+            "claim": "announced",
+            "src": 2
+          }
+        ]
+      },
+      "src": [
+        0,
+        1
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "kind": "dataset",
+      "title": "Municipal Licensing and Standards - Business Licences and Permits",
+      "publisher": "City of Toronto",
+      "url": "https://open.toronto.ca/dataset/municipal-licensing-and-standards-business-licences-and-permits/",
+      "date": "2026-09-23"
+    },
+    {
+      "kind": "dataset",
+      "title": "DineSafe",
+      "publisher": "City of Toronto",
+      "url": "https://open.toronto.ca/dataset/dinesafe/",
+      "date": "2026-09-23"
+    },
+    {
+      "kind": "news_article",
+      "title": "Popular Toronto vegan restaurant to close permanently after 15 years",
+      "publisher": "blogTO",
+      "url": "https://www.blogto.com/eat_drink/2026/09/hogtown-vegan-toronto-closed/",
+      "date": "2026-09-17"
+    }
+  ]
+}

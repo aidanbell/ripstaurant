@@ -1,0 +1,137 @@
+{
+  "v": 1,
+  "id": "tor-1426-danforth-ave",
+  "city": "toronto",
+  "addr": "1426 Danforth Ave",
+  "ll": [
+    -79.3271,
+    43.68289
+  ],
+  "hood": "Danforth",
+  "occupants": [
+    {
+      "name": "Sarah's Cafe and Bar",
+      "bt": "bar",
+      "from": "1996-03-15",
+      "to": "2024-05-02",
+      "event": {
+        "id": "tor-1426-danforth-ave~sarahs-cafe-and-bar",
+        "type": "permanent",
+        "status": "closed",
+        "d": [
+          "2022-04-13",
+          "2024-05-02"
+        ],
+        "reasons": [],
+        "next": {
+          "name": "Taverne Tamblyn"
+        },
+        "evidence": [
+          {
+            "claim": "closed",
+            "src": 1
+          },
+          {
+            "claim": "closed",
+            "src": 0
+          },
+          {
+            "claim": "successor",
+            "src": 1
+          }
+        ]
+      },
+      "src": [
+        0,
+        1
+      ]
+    },
+    {
+      "name": "Taverne Tamblyn",
+      "bt": "restaurant",
+      "from": "2023-05-24",
+      "to": "2026-01-25",
+      "yrs": 4,
+      "event": {
+        "id": "tor-1426-danforth-ave~taverne-tamblyn",
+        "type": "permanent",
+        "status": "closed",
+        "d": [
+          "2026-01-25",
+          "2026-01-25"
+        ],
+        "reasons": [
+          {
+            "code": "sale",
+            "kind": "stated",
+            "summary": "Owner sold the business",
+            "src": [
+              2
+            ]
+          },
+          {
+            "code": "financial",
+            "kind": "stated",
+            "summary": "Owner had earlier cited thin margins and rising overhead",
+            "src": [
+              2
+            ]
+          }
+        ],
+        "next": {
+          "name": "Loukoumania Cafe"
+        },
+        "evidence": [
+          {
+            "claim": "closed",
+            "src": 2
+          },
+          {
+            "claim": "closed",
+            "src": 0
+          },
+          {
+            "claim": "successor",
+            "src": 1
+          }
+        ]
+      },
+      "src": [
+        1,
+        0
+      ]
+    },
+    {
+      "name": "Loukoumania Cafe",
+      "bt": "cafe",
+      "from": "2026-08-20",
+      "to": null,
+      "src": [
+        1
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "kind": "dataset",
+      "title": "Municipal Licensing and Standards - Business Licences and Permits",
+      "publisher": "City of Toronto",
+      "url": "https://open.toronto.ca/dataset/municipal-licensing-and-standards-business-licences-and-permits/",
+      "date": "2026-09-23"
+    },
+    {
+      "kind": "dataset",
+      "title": "DineSafe",
+      "publisher": "City of Toronto",
+      "url": "https://open.toronto.ca/dataset/dinesafe/",
+      "date": "2026-09-23"
+    },
+    {
+      "kind": "news_article",
+      "title": "Beleaguered Toronto restaurant closes permanently months after launching new concept",
+      "publisher": "blogTO",
+      "url": "https://www.blogto.com/eat_drink/2026/02/taverne-tamblyn-toronto-closed/",
+      "date": "2026-02-02"
+    }
+  ]
+}

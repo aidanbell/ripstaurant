@@ -1,0 +1,720 @@
+{
+  "v": 1,
+  "city": {
+    "slug": "toronto",
+    "name": "Toronto",
+    "center": [
+      -79.3832,
+      43.6532
+    ],
+    "bbox": [
+      -79.6393,
+      43.581,
+      -79.1153,
+      43.8555
+    ]
+  },
+  "generated": "2026-09-23T00:00:00.000Z",
+  "since": "2022-03-01",
+  "hoods": [
+    "Agincourt North",
+    "Agincourt South-Malvern West",
+    "Alderwood",
+    "Annex",
+    "Avondale",
+    "Banbury-Don Mills",
+    "Bathurst Manor",
+    "Bay-Cloverhill",
+    "Bayview Village",
+    "Bayview Woods-Steeles",
+    "Bedford Park-Nortown",
+    "Beechborough-Greenbrook",
+    "Bendale South",
+    "Bendale-Glen Andrew",
+    "Birchcliffe-Cliffside",
+    "Black Creek",
+    "Blake-Jones",
+    "Briar Hill-Belgravia",
+    "Bridle Path-Sunnybrook-York Mills",
+    "Broadview North",
+    "Brookhaven-Amesbury",
+    "Cabbagetown-South St.James Town",
+    "Caledonia-Fairbank",
+    "Casa Loma",
+    "Centennial Scarborough",
+    "Church-Wellesley",
+    "Clairlea-Birchmount",
+    "Clanton Park",
+    "Cliffcrest",
+    "Corso Italia-Davenport",
+    "Danforth",
+    "Danforth East York",
+    "Don Valley Village",
+    "Dorset Park",
+    "Dovercourt Village",
+    "Downsview",
+    "Downtown Yonge East",
+    "Dufferin Grove",
+    "East End-Danforth",
+    "East L'Amoreaux",
+    "East Willowdale",
+    "Edenbridge-Humber Valley",
+    "Eglinton East",
+    "Elms-Old Rexdale",
+    "Englemount-Lawrence",
+    "Eringate-Centennial-West Deane",
+    "Etobicoke City Centre",
+    "Etobicoke West Mall",
+    "Fenside-Parkwoods",
+    "Flemingdon Park",
+    "Forest Hill North",
+    "Forest Hill South",
+    "Fort York-Liberty Village",
+    "Glenfield-Jane Heights",
+    "Golfdale-Cedarbrae-Woburn",
+    "Greenwood-Coxwell",
+    "Guildwood",
+    "Harbourfront-CityPlace",
+    "Henry Farm",
+    "High Park North",
+    "High Park-Swansea",
+    "Highland Creek",
+    "Hillcrest Village",
+    "Humber Bay Shores",
+    "Humber Heights-Westmount",
+    "Humber Summit",
+    "Humbermede",
+    "Humewood-Cedarvale",
+    "Ionview",
+    "Islington",
+    "Junction Area",
+    "Junction-Wallace Emerson",
+    "Keelesdale-Eglinton West",
+    "Kennedy Park",
+    "Kensington-Chinatown",
+    "Kingsview Village-The Westway",
+    "Kingsway South",
+    "L'Amoreaux West",
+    "Lambton Baby Point",
+    "Lansing-Westgate",
+    "Lawrence Park North",
+    "Lawrence Park South",
+    "Leaside-Bennington",
+    "Little Portugal",
+    "Long Branch",
+    "Malvern East",
+    "Malvern West",
+    "Maple Leaf",
+    "Markland Wood",
+    "Milliken",
+    "Mimico-Queensway",
+    "Morningside",
+    "Morningside Heights",
+    "Moss Park",
+    "Mount Dennis",
+    "Mount Olive-Silverstone-Jamestown",
+    "Mount Pleasant East",
+    "New Toronto",
+    "Newtonbrook East",
+    "Newtonbrook West",
+    "North Riverdale",
+    "North St.James Town",
+    "North Toronto",
+    "O'Connor-Parkview",
+    "Oakdale-Beverley Heights",
+    "Oakridge",
+    "Oakwood Village",
+    "Old East York",
+    "Palmerston-Little Italy",
+    "Parkwoods-O'Connor Hills",
+    "Pelmo Park-Humberlea",
+    "Playter Estates-Danforth",
+    "Pleasant View",
+    "Princess-Rosethorn",
+    "Regent Park",
+    "Rexdale-Kipling",
+    "Rockcliffe-Smythe",
+    "Roncesvalles",
+    "Rosedale-Moore Park",
+    "Runnymede-Bloor West Village",
+    "Rustic",
+    "Scarborough Village",
+    "South Eglinton-Davisville",
+    "South Parkdale",
+    "South Riverdale",
+    "St Lawrence-East Bayfront-The Islands",
+    "St.Andrew-Windfields",
+    "Steeles",
+    "Stonegate-Queensway",
+    "Tam O'Shanter-Sullivan",
+    "Taylor-Massey",
+    "The Beaches",
+    "Thistletown-Beaumond Heights",
+    "Thorncliffe Park",
+    "Trinity-Bellwoods",
+    "University",
+    "Victoria Village",
+    "Wellington Place",
+    "West Hill",
+    "West Humber-Clairville",
+    "West Queen West",
+    "West Rouge",
+    "Westminster-Branson",
+    "Weston",
+    "Weston-Pelham Park",
+    "Wexford/Maryvale",
+    "Willowdale West",
+    "Willowridge-Martingrove-Richview",
+    "Woburn North",
+    "Woodbine Corridor",
+    "Woodbine-Lumsden",
+    "Wychwood",
+    "Yonge-Bay Corridor",
+    "Yonge-Doris",
+    "Yonge-Eglinton",
+    "Yonge-St.Clair",
+    "York University Heights",
+    "Yorkdale-Glen Park"
+  ],
+  "closures": [
+    {
+      "id": "tor-141-berkeley-st~buvette-pacey",
+      "loc": "tor-141-berkeley-st",
+      "name": "Buvette Pacey",
+      "addr": "141 Berkeley St",
+      "hood": 93,
+      "ll": [
+        -79.36538,
+        43.65498
+      ],
+      "type": "permanent",
+      "status": "announced",
+      "d": [
+        null,
+        null
+      ],
+      "bt": "cafe",
+      "rs": [
+        "financial"
+      ],
+      "yrs": 3
+    },
+    {
+      "id": "tor-820-the-queensway~dinos-wood-burning-pizza",
+      "loc": "tor-820-the-queensway",
+      "name": "Dino's Wood Burning Pizza",
+      "addr": "820 The Queensway",
+      "hood": 128,
+      "ll": [
+        -79.50831,
+        43.62524
+      ],
+      "type": "permanent",
+      "status": "announced",
+      "d": [
+        null,
+        null
+      ],
+      "bt": "restaurant",
+      "rs": [
+        "sale",
+        "financial"
+      ],
+      "yrs": 20,
+      "chain": true
+    },
+    {
+      "id": "tor-382-college-st~the-hogtown-vegan",
+      "loc": "tor-382-college-st",
+      "name": "The Hogtown Vegan",
+      "addr": "382 College St",
+      "hood": 74,
+      "ll": [
+        -79.40517,
+        43.65698
+      ],
+      "type": "permanent",
+      "status": "announced",
+      "d": [
+        "2026-09-27",
+        "2026-09-27"
+      ],
+      "bt": "restaurant",
+      "rs": [],
+      "yrs": 15
+    },
+    {
+      "id": "tor-116-geary-ave-unit-108a~famiglia-baldassarre",
+      "loc": "tor-116-geary-ave-unit-108a",
+      "name": "Famiglia Baldassarre",
+      "addr": "116 Geary Ave, Unit 108A",
+      "hood": 71,
+      "ll": [
+        -79.43483,
+        43.67053
+      ],
+      "type": "format_change",
+      "status": "closed",
+      "d": [
+        "2026-08-14",
+        "2026-08-14"
+      ],
+      "bt": "take_out",
+      "rs": [],
+      "yrs": 9
+    },
+    {
+      "id": "tor-1276-queen-st-e~daddys-chicken",
+      "loc": "tor-1276-queen-st-e",
+      "name": "Daddy's Chicken",
+      "addr": "1276 Queen St E",
+      "hood": 124,
+      "ll": [
+        -79.32884,
+        43.66385
+      ],
+      "type": "permanent",
+      "status": "closed",
+      "d": [
+        "2025-12-20",
+        "2026-02-28"
+      ],
+      "bt": "restaurant",
+      "rs": [
+        "rent_lease"
+      ],
+      "yrs": 10
+    },
+    {
+      "id": "tor-1426-danforth-ave~taverne-tamblyn",
+      "loc": "tor-1426-danforth-ave",
+      "name": "Taverne Tamblyn",
+      "addr": "1426 Danforth Ave",
+      "hood": 30,
+      "ll": [
+        -79.3271,
+        43.68289
+      ],
+      "type": "permanent",
+      "status": "closed",
+      "d": [
+        "2026-01-25",
+        "2026-01-25"
+      ],
+      "bt": "restaurant",
+      "rs": [
+        "sale",
+        "financial"
+      ],
+      "yrs": 4,
+      "next": "Loukoumania Cafe"
+    },
+    {
+      "id": "tor-400-bloor-st-w~by-the-way",
+      "loc": "tor-400-bloor-st-w",
+      "name": "By The Way",
+      "addr": "400 Bloor St W",
+      "hood": 3,
+      "ll": [
+        -79.40756,
+        43.66599
+      ],
+      "type": "permanent",
+      "status": "closed",
+      "d": [
+        "2025-08-31",
+        "2025-08-31"
+      ],
+      "bt": "restaurant",
+      "rs": [],
+      "yrs": 40,
+      "next": "Brasserie Cote Co"
+    },
+    {
+      "id": "tor-615-queen-st-w~the-food-alley",
+      "loc": "tor-615-queen-st-w",
+      "name": "The Food Alley",
+      "addr": "615 Queen St W",
+      "hood": 137,
+      "ll": [
+        -79.40256,
+        43.64728
+      ],
+      "type": "permanent",
+      "status": "closed",
+      "d": [
+        "2025-08-01",
+        "2025-08-15"
+      ],
+      "bt": "market",
+      "rs": [],
+      "next": "Queen's Bloc"
+    },
+    {
+      "id": "tor-769-dundas-st-w~subway",
+      "loc": "tor-769-dundas-st-w",
+      "name": "Subway",
+      "addr": "769 Dundas St W",
+      "hood": 134,
+      "ll": [
+        -79.40704,
+        43.65209
+      ],
+      "type": "permanent",
+      "status": "closed",
+      "d": [
+        "2023-09-14",
+        "2025-07-09"
+      ],
+      "bt": "restaurant",
+      "rs": [],
+      "chain": true,
+      "next": "Wonky Donkey"
+    },
+    {
+      "id": "tor-2120-queen-st-e~mehfill-indian-cuisine",
+      "loc": "tor-2120-queen-st-e",
+      "name": "Mehfill Indian Cuisine",
+      "addr": "2120 Queen St E",
+      "hood": 131,
+      "ll": [
+        -79.29476,
+        43.67136
+      ],
+      "type": "permanent",
+      "status": "closed",
+      "d": [
+        null,
+        "2025-07-02"
+      ],
+      "bt": "restaurant",
+      "rs": [],
+      "chain": true,
+      "next": "Original Banana Leaf"
+    },
+    {
+      "id": "tor-26-market-st~bar-st-lo",
+      "loc": "tor-26-market-st",
+      "name": "Bar St. Lo",
+      "addr": "26 Market St",
+      "hood": 125,
+      "ll": [
+        -79.37213,
+        43.64901
+      ],
+      "type": "permanent",
+      "status": "closed",
+      "d": [
+        "2025-04-27",
+        "2025-04-27"
+      ],
+      "bt": "bar",
+      "rs": [
+        "sale"
+      ],
+      "yrs": 4,
+      "next": "Anejo Restaurant"
+    },
+    {
+      "id": "tor-184-augusta-ave~amadeus-restaurant",
+      "loc": "tor-184-augusta-ave",
+      "name": "Amadeu's Restaurant",
+      "addr": "184 Augusta Ave",
+      "hood": 74,
+      "ll": [
+        -79.4019,
+        43.65402
+      ],
+      "type": "permanent",
+      "status": "closed",
+      "d": [
+        "2025-02-04",
+        "2025-02-04"
+      ],
+      "bt": "restaurant",
+      "rs": [
+        "owner_retirement",
+        "sale"
+      ],
+      "yrs": 36,
+      "next": "Burdock Brewery Kensington Tavern"
+    },
+    {
+      "id": "tor-875-queen-st-w~noce",
+      "loc": "tor-875-queen-st-w",
+      "name": "Noce",
+      "addr": "875 Queen St W",
+      "hood": 140,
+      "ll": [
+        -79.4113,
+        43.64562
+      ],
+      "type": "permanent",
+      "status": "closed",
+      "d": [
+        "2024-09-01",
+        "2024-11-30"
+      ],
+      "bt": "restaurant",
+      "rs": [],
+      "yrs": 28,
+      "next": "Little Ese"
+    },
+    {
+      "id": "tor-74-ossington-ave~ghost-chicken",
+      "loc": "tor-74-ossington-ave",
+      "name": "Ghost Chicken",
+      "addr": "74 Ossington Ave",
+      "hood": 134,
+      "ll": [
+        -79.4198,
+        43.64582
+      ],
+      "type": "format_change",
+      "status": "closed",
+      "d": [
+        "2024-06-01",
+        "2024-06-30"
+      ],
+      "bt": "restaurant",
+      "rs": [],
+      "yrs": 2,
+      "next": "No Vacancy"
+    },
+    {
+      "id": "tor-1426-danforth-ave~sarahs-cafe-and-bar",
+      "loc": "tor-1426-danforth-ave",
+      "name": "Sarah's Cafe and Bar",
+      "addr": "1426 Danforth Ave",
+      "hood": 30,
+      "ll": [
+        -79.3271,
+        43.68289
+      ],
+      "type": "permanent",
+      "status": "closed",
+      "d": [
+        "2022-04-13",
+        "2024-05-02"
+      ],
+      "bt": "bar",
+      "rs": [],
+      "next": "Taverne Tamblyn"
+    },
+    {
+      "id": "tor-46-blue-jays-way~wahlburgers",
+      "loc": "tor-46-blue-jays-way",
+      "name": "Wahlburgers",
+      "addr": "46 Blue Jays Way",
+      "hood": 137,
+      "ll": [
+        -79.39211,
+        43.64553
+      ],
+      "type": "permanent",
+      "status": "closed",
+      "d": [
+        "2024-01-01",
+        "2024-01-16"
+      ],
+      "bt": "restaurant",
+      "rs": [],
+      "yrs": 9,
+      "chain": true
+    },
+    {
+      "id": "tor-3150-dufferin-st-unit-102~swiss-chalet",
+      "loc": "tor-3150-dufferin-st-unit-102",
+      "name": "Swiss Chalet",
+      "addr": "3150 Dufferin St, Unit 102",
+      "hood": 157,
+      "ll": [
+        -79.4556,
+        43.71717
+      ],
+      "type": "temporary",
+      "status": "reopened",
+      "d": [
+        "2023-10-04",
+        "2023-10-04"
+      ],
+      "bt": "restaurant",
+      "rs": [
+        "health_enforcement"
+      ],
+      "chain": true
+    },
+    {
+      "id": "tor-1260-bloor-st-w~brock-sandwich",
+      "loc": "tor-1260-bloor-st-w",
+      "name": "Brock Sandwich",
+      "addr": "1260 Bloor St W",
+      "hood": 71,
+      "ll": [
+        -79.44055,
+        43.65899
+      ],
+      "type": "permanent",
+      "status": "closed",
+      "d": [
+        "2023-06-24",
+        "2023-06-24"
+      ],
+      "bt": "take_out",
+      "rs": [
+        "rent_lease",
+        "financial",
+        "pandemic"
+      ],
+      "yrs": 10,
+      "next": "IBET Sushi"
+    },
+    {
+      "id": "tor-1802-pharmacy-ave~le-cafe-michi",
+      "loc": "tor-1802-pharmacy-ave",
+      "name": "Le Cafe Michi",
+      "addr": "1802 Pharmacy Ave",
+      "hood": 129,
+      "ll": [
+        -79.31777,
+        43.7756
+      ],
+      "type": "permanent",
+      "status": "closed",
+      "d": [
+        "2023-01-31",
+        "2023-01-31"
+      ],
+      "bt": "restaurant",
+      "rs": [
+        "owner_retirement"
+      ]
+    },
+    {
+      "id": "tor-165-east-liberty-st~popeyes-louisiana-kitchen",
+      "loc": "tor-165-east-liberty-st",
+      "name": "Popeyes Louisiana Kitchen",
+      "addr": "165 East Liberty St",
+      "hood": 52,
+      "ll": [
+        -79.41722,
+        43.63831
+      ],
+      "type": "permanent",
+      "status": "closed",
+      "d": [
+        "2022-08-09",
+        "2022-12-31"
+      ],
+      "bt": "take_out",
+      "rs": [
+        "rent_lease"
+      ],
+      "chain": true
+    },
+    {
+      "id": "tor-2120-queen-st-e~green-basil",
+      "loc": "tor-2120-queen-st-e",
+      "name": "Green Basil",
+      "addr": "2120 Queen St E",
+      "hood": 131,
+      "ll": [
+        -79.29476,
+        43.67136
+      ],
+      "type": "permanent",
+      "status": "closed",
+      "d": [
+        "2022-10-30",
+        "2022-10-30"
+      ],
+      "bt": "restaurant",
+      "rs": [],
+      "yrs": 15,
+      "next": "Mehfill Indian Cuisine"
+    },
+    {
+      "id": "tor-224-parliament-st~kabul-naan-kabob",
+      "loc": "tor-224-parliament-st",
+      "name": "Kabul Naan Kabob",
+      "addr": "224 Parliament St",
+      "hood": 93,
+      "ll": [
+        -79.36532,
+        43.65715
+      ],
+      "type": "permanent",
+      "status": "closed",
+      "d": [
+        null,
+        "2022-09-08"
+      ],
+      "bt": "restaurant",
+      "rs": [],
+      "next": "Wanaag Restaurant"
+    },
+    {
+      "id": "tor-399-roncesvalles-ave~sweet-thrills",
+      "loc": "tor-399-roncesvalles-ave",
+      "name": "Sweet Thrills",
+      "addr": "399 Roncesvalles Ave",
+      "hood": 117,
+      "ll": [
+        -79.45057,
+        43.65089
+      ],
+      "type": "relocated",
+      "status": "closed",
+      "d": [
+        "2022-07-31",
+        "2022-07-31"
+      ],
+      "bt": "food_retail",
+      "rs": [
+        "rent_lease"
+      ],
+      "yrs": 24,
+      "next": "Sweet Thrills"
+    },
+    {
+      "id": "tor-176-dupont-st~big-crow",
+      "loc": "tor-176-dupont-st",
+      "name": "Big Crow",
+      "addr": "176 Dupont St",
+      "hood": 3,
+      "ll": [
+        -79.40367,
+        43.67574
+      ],
+      "type": "permanent",
+      "status": "closed",
+      "d": [
+        "2022-06-26",
+        "2022-06-26"
+      ],
+      "bt": "restaurant",
+      "rs": []
+    },
+    {
+      "id": "tor-176-dupont-st~rose-and-sons",
+      "loc": "tor-176-dupont-st",
+      "name": "Rose and Sons",
+      "addr": "176 Dupont St",
+      "hood": 3,
+      "ll": [
+        -79.40367,
+        43.67574
+      ],
+      "type": "permanent",
+      "status": "closed",
+      "d": [
+        "2022-06-26",
+        "2022-06-26"
+      ],
+      "bt": "restaurant",
+      "rs": [],
+      "yrs": 10,
+      "next": "Chilliy Pepper"
+    }
+  ]
+}

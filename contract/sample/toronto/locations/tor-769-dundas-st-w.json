@@ -1,0 +1,77 @@
+{
+  "v": 1,
+  "id": "tor-769-dundas-st-w",
+  "city": "toronto",
+  "addr": "769 Dundas St W",
+  "ll": [
+    -79.40704,
+    43.65209
+  ],
+  "hood": "Trinity-Bellwoods",
+  "occupants": [
+    {
+      "name": "Subway",
+      "bt": "restaurant",
+      "from": "2009-08-14",
+      "to": "2025-07-09",
+      "chain": true,
+      "event": {
+        "id": "tor-769-dundas-st-w~subway",
+        "type": "permanent",
+        "status": "closed",
+        "d": [
+          "2023-09-14",
+          "2025-07-09"
+        ],
+        "reasons": [],
+        "next": {
+          "name": "Wonky Donkey"
+        },
+        "evidence": [
+          {
+            "claim": "closed",
+            "src": 1
+          },
+          {
+            "claim": "closed",
+            "src": 0
+          },
+          {
+            "claim": "successor",
+            "src": 0
+          }
+        ]
+      },
+      "src": [
+        0,
+        1
+      ]
+    },
+    {
+      "name": "Wonky Donkey",
+      "bt": "restaurant",
+      "from": "2025-09-22",
+      "to": null,
+      "src": [
+        0,
+        1
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "kind": "dataset",
+      "title": "Municipal Licensing and Standards - Business Licences and Permits",
+      "publisher": "City of Toronto",
+      "url": "https://open.toronto.ca/dataset/municipal-licensing-and-standards-business-licences-and-permits/",
+      "date": "2026-09-23"
+    },
+    {
+      "kind": "dataset",
+      "title": "DineSafe",
+      "publisher": "City of Toronto",
+      "url": "https://open.toronto.ca/dataset/dinesafe/",
+      "date": "2026-09-23"
+    }
+  ]
+}

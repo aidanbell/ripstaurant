@@ -1,0 +1,80 @@
+{
+  "v": 1,
+  "id": "tor-1276-queen-st-e",
+  "city": "toronto",
+  "addr": "1276 Queen St E",
+  "ll": [
+    -79.32884,
+    43.66385
+  ],
+  "hood": "South Riverdale",
+  "occupants": [
+    {
+      "name": "The Hummingbird Caribbean Cuisine",
+      "from": "2012-10-23",
+      "to": "2015-01-23",
+      "src": [
+        0
+      ]
+    },
+    {
+      "name": "Daddy's Chicken",
+      "bt": "restaurant",
+      "from": "2015-09-04",
+      "to": "2026-02-28",
+      "yrs": 10,
+      "event": {
+        "id": "tor-1276-queen-st-e~daddys-chicken",
+        "type": "permanent",
+        "status": "closed",
+        "d": [
+          "2025-12-20",
+          "2026-02-28"
+        ],
+        "reasons": [
+          {
+            "code": "rent_lease",
+            "kind": "stated",
+            "summary": "Owner says the landlord evicted them after they refused to pay for a furnace replacement",
+            "src": [
+              2
+            ]
+          }
+        ],
+        "evidence": [
+          {
+            "claim": "closed",
+            "src": 2
+          }
+        ]
+      },
+      "src": [
+        0,
+        1
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "kind": "dataset",
+      "title": "Municipal Licensing and Standards - Business Licences and Permits",
+      "publisher": "City of Toronto",
+      "url": "https://open.toronto.ca/dataset/municipal-licensing-and-standards-business-licences-and-permits/",
+      "date": "2026-09-23"
+    },
+    {
+      "kind": "dataset",
+      "title": "DineSafe",
+      "publisher": "City of Toronto",
+      "url": "https://open.toronto.ca/dataset/dinesafe/",
+      "date": "2026-09-23"
+    },
+    {
+      "kind": "news_article",
+      "title": "Toronto restaurant forced to close after 'eviction by extortion' from landlord",
+      "publisher": "blogTO",
+      "url": "https://www.blogto.com/eat_drink/2026/01/daddys-chicken-toronto-eviction/",
+      "date": "2026-01-13"
+    }
+  ]
+}

@@ -1,0 +1,71 @@
+{
+  "v": 1,
+  "id": "tor-224-parliament-st",
+  "city": "toronto",
+  "addr": "224 Parliament St",
+  "ll": [
+    -79.36532,
+    43.65715
+  ],
+  "hood": "Moss Park",
+  "occupants": [
+    {
+      "name": "Kabul Naan Kabob",
+      "bt": "restaurant",
+      "from": "2019-03-26",
+      "to": "2022-09-08",
+      "event": {
+        "id": "tor-224-parliament-st~kabul-naan-kabob",
+        "type": "permanent",
+        "status": "closed",
+        "d": [
+          null,
+          "2022-09-08"
+        ],
+        "reasons": [],
+        "next": {
+          "name": "Wanaag Restaurant"
+        },
+        "evidence": [
+          {
+            "claim": "closed",
+            "src": 0
+          },
+          {
+            "claim": "successor",
+            "src": 0
+          }
+        ]
+      },
+      "src": [
+        0
+      ]
+    },
+    {
+      "name": "Wanaag Restaurant",
+      "bt": "restaurant",
+      "from": "2022-09-08",
+      "to": null,
+      "src": [
+        0,
+        1
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "kind": "dataset",
+      "title": "Municipal Licensing and Standards - Business Licences and Permits",
+      "publisher": "City of Toronto",
+      "url": "https://open.toronto.ca/dataset/municipal-licensing-and-standards-business-licences-and-permits/",
+      "date": "2026-09-23"
+    },
+    {
+      "kind": "dataset",
+      "title": "DineSafe",
+      "publisher": "City of Toronto",
+      "url": "https://open.toronto.ca/dataset/dinesafe/",
+      "date": "2026-09-23"
+    }
+  ]
+}

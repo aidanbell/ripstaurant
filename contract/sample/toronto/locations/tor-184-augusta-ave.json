@@ -1,0 +1,88 @@
+{
+  "v": 1,
+  "id": "tor-184-augusta-ave",
+  "city": "toronto",
+  "addr": "184 Augusta Ave",
+  "ll": [
+    -79.4019,
+    43.65402
+  ],
+  "hood": "Kensington-Chinatown",
+  "occupants": [
+    {
+      "name": "Amadeu's Restaurant",
+      "bt": "restaurant",
+      "from": null,
+      "to": "2025-02-04",
+      "yrs": 36,
+      "event": {
+        "id": "tor-184-augusta-ave~amadeus-restaurant",
+        "type": "permanent",
+        "status": "closed",
+        "d": [
+          "2025-02-04",
+          "2025-02-04"
+        ],
+        "reasons": [
+          {
+            "code": "owner_retirement",
+            "kind": "stated",
+            "summary": "Owner, 75, is retiring to spend time with family",
+            "src": [
+              1
+            ]
+          },
+          {
+            "code": "sale",
+            "kind": "stated",
+            "summary": "Owners decided to sell the restaurant",
+            "src": [
+              1
+            ]
+          }
+        ],
+        "next": {
+          "name": "Burdock Brewery Kensington Tavern"
+        },
+        "evidence": [
+          {
+            "claim": "closed",
+            "src": 1
+          },
+          {
+            "claim": "successor",
+            "src": 0
+          }
+        ]
+      },
+      "src": [
+        0
+      ]
+    },
+    {
+      "name": "Burdock Brewery Kensington Tavern",
+      "bt": "bar",
+      "from": "2025-06-13",
+      "to": null,
+      "src": [
+        0
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "kind": "dataset",
+      "title": "DineSafe",
+      "publisher": "City of Toronto",
+      "url": "https://open.toronto.ca/dataset/dinesafe/",
+      "date": "2026-09-23"
+    },
+    {
+      "kind": "news_article",
+      "title": "Restaurant with legendary patio abruptly shuts down after 36 years in Toronto",
+      "publisher": "blogTO",
+      "url": "https://www.blogto.com/eat_drink/2025/02/amadeus-restaurant-toronto-shuts-down/",
+      "date": "2025-02-06"
+    }
+  ]
+}

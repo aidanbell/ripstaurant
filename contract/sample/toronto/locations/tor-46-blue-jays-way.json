@@ -1,0 +1,77 @@
+{
+  "v": 1,
+  "id": "tor-46-blue-jays-way",
+  "city": "toronto",
+  "addr": "46 Blue Jays Way",
+  "ll": [
+    -79.39211,
+    43.64553
+  ],
+  "hood": "Wellington Place",
+  "occupants": [
+    {
+      "name": "Wahlburgers",
+      "bt": "restaurant",
+      "from": null,
+      "to": "2024-01-16",
+      "yrs": 9,
+      "chain": true,
+      "event": {
+        "id": "tor-46-blue-jays-way~wahlburgers",
+        "type": "permanent",
+        "status": "closed",
+        "d": [
+          "2024-01-01",
+          "2024-01-16"
+        ],
+        "reasons": [
+          {
+            "code": "unknown",
+            "kind": "stated",
+            "summary": "Staff said the decision came about organically as the business evolved",
+            "src": [
+              2
+            ]
+          }
+        ],
+        "evidence": [
+          {
+            "claim": "closed",
+            "src": 2
+          },
+          {
+            "claim": "closed",
+            "src": 0
+          }
+        ]
+      },
+      "src": [
+        0,
+        1
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "kind": "dataset",
+      "title": "Municipal Licensing and Standards - Business Licences and Permits",
+      "publisher": "City of Toronto",
+      "url": "https://open.toronto.ca/dataset/municipal-licensing-and-standards-business-licences-and-permits/",
+      "date": "2026-09-23"
+    },
+    {
+      "kind": "dataset",
+      "title": "DineSafe",
+      "publisher": "City of Toronto",
+      "url": "https://open.toronto.ca/dataset/dinesafe/",
+      "date": "2026-09-23"
+    },
+    {
+      "kind": "news_article",
+      "title": "Mark Wahlberg's burger chain permanently closes Toronto location",
+      "publisher": "blogTO",
+      "url": "https://www.blogto.com/eat_drink/2024/01/wahlburgers-toronto-closed/",
+      "date": "2024-01-16"
+    }
+  ]
+}

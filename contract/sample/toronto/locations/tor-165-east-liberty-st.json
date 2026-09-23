@@ -1,0 +1,68 @@
+{
+  "v": 1,
+  "id": "tor-165-east-liberty-st",
+  "city": "toronto",
+  "addr": "165 East Liberty St",
+  "ll": [
+    -79.41722,
+    43.63831
+  ],
+  "hood": "Fort York-Liberty Village",
+  "occupants": [
+    {
+      "name": "Popeyes Louisiana Kitchen",
+      "bt": "take_out",
+      "from": null,
+      "to": "2022-12-31",
+      "chain": true,
+      "event": {
+        "id": "tor-165-east-liberty-st~popeyes-louisiana-kitchen",
+        "type": "permanent",
+        "status": "closed",
+        "d": [
+          "2022-08-09",
+          "2022-12-31"
+        ],
+        "reasons": [
+          {
+            "code": "rent_lease",
+            "kind": "stated",
+            "summary": "Landlord seized the unit over more than $100,000 in unpaid rent",
+            "src": [
+              1
+            ]
+          }
+        ],
+        "evidence": [
+          {
+            "claim": "closed",
+            "src": 1
+          },
+          {
+            "claim": "closed",
+            "src": 0
+          }
+        ]
+      },
+      "src": [
+        0
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "kind": "dataset",
+      "title": "DineSafe",
+      "publisher": "City of Toronto",
+      "url": "https://open.toronto.ca/dataset/dinesafe/",
+      "date": "2026-09-23"
+    },
+    {
+      "kind": "news_article",
+      "title": "Popeyes location in Toronto shut down for non payment of rent has seemingly reopened",
+      "publisher": "blogTO",
+      "url": "https://www.blogto.com/eat_drink/2024/01/popeyes-bloor-toronto/",
+      "date": "2024-01-28"
+    }
+  ]
+}

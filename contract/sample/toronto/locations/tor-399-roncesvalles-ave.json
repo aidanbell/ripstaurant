@@ -1,0 +1,84 @@
+{
+  "v": 1,
+  "id": "tor-399-roncesvalles-ave",
+  "city": "toronto",
+  "addr": "399 Roncesvalles Ave",
+  "ll": [
+    -79.45057,
+    43.65089
+  ],
+  "hood": "Roncesvalles",
+  "occupants": [
+    {
+      "name": "Sweet Thrills",
+      "bt": "food_retail",
+      "from": "2003-05-01",
+      "to": "2022-07-31",
+      "yrs": 24,
+      "event": {
+        "id": "tor-399-roncesvalles-ave~sweet-thrills",
+        "type": "relocated",
+        "status": "closed",
+        "d": [
+          "2022-07-31",
+          "2022-07-31"
+        ],
+        "reasons": [
+          {
+            "code": "rent_lease",
+            "kind": "stated",
+            "summary": "Landlord suddenly raised the rent beyond what the store could afford",
+            "src": [
+              1
+            ]
+          }
+        ],
+        "next": {
+          "name": "Sweet Thrills",
+          "loc": "tor-367-roncesvalles-ave",
+          "addr": "367 Roncesvalles Ave"
+        },
+        "evidence": [
+          {
+            "claim": "closed",
+            "src": 1
+          },
+          {
+            "claim": "closed",
+            "src": 0
+          },
+          {
+            "claim": "relocated",
+            "src": 2
+          }
+        ]
+      },
+      "src": [
+        0
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "kind": "dataset",
+      "title": "Municipal Licensing and Standards - Business Licences and Permits",
+      "publisher": "City of Toronto",
+      "url": "https://open.toronto.ca/dataset/municipal-licensing-and-standards-business-licences-and-permits/",
+      "date": "2026-09-23"
+    },
+    {
+      "kind": "news_article",
+      "title": "Toronto candy store that was open for 25 years permanently closes due to rent increase",
+      "publisher": "blogTO",
+      "url": "https://www.blogto.com/eat_drink/2022/08/sweet-thrills-toronto-closed/",
+      "date": "2022-08-07"
+    },
+    {
+      "kind": "dataset",
+      "title": "DineSafe",
+      "publisher": "City of Toronto",
+      "url": "https://open.toronto.ca/dataset/dinesafe/",
+      "date": "2026-09-23"
+    }
+  ]
+}

@@ -1,0 +1,12 @@
+{
+  "v": 1,
+  "generated": "2026-09-23T00:00:00.000Z",
+  "cities": [
+    {
+      "slug": "toronto",
+      "name": "Toronto",
+      "list": "toronto/closures.74d85b96.json",
+      "count": 25
+    }
+  ]
+}
