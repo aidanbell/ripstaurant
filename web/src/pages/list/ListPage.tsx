@@ -1,11 +1,18 @@
-import { Link, useLoaderData } from "react-router";
+import { Link, useLoaderData, useSearchParams } from "react-router";
 import { formatRange } from "../../format";
 import type { cityLoader } from "../../loaders";
+import { applyFilters, parseFilters } from "../../filters";
+import { useMemo } from "react";
+import { FilterForm } from "../../components/FilterForm";
 
 const SHOWN = 50;
 
 export function ListPage() {
   const list = useLoaderData<typeof cityLoader>();
+  const [params] = useSearchParams();
+  const filters = parseFilters(params);
+  const rows = useMemo(() => applyFilters(list, filters), [list, params]);
+
   return (
     <section>
       <h1>Closures</h1>
@@ -13,6 +20,7 @@ export function ListPage() {
         {list.closures.length} closures in {list.city.name} since {list.since}.
         Newest {SHOWN}:
       </p>
+      <FilterForm list={list} filters={filters} />
       <table>
         <thead>
           <tr>
@@ -26,7 +34,7 @@ export function ListPage() {
           </tr>
         </thead>
         <tbody>
-          {list.closures.slice(0, SHOWN).map((row) => (
+          {rows.slice(0, SHOWN).map((row) => (
             <tr key={row.id}>
               <td>
                 <Link to={`/location/${row.loc}`}>{row.name}</Link>

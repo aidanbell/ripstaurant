@@ -12,11 +12,13 @@ import { mkdir, rm } from "node:fs/promises";
 import { parseArgs } from "node:util";
 import {
   CONTRACT_VERSION,
+  Boundaries,
   CityList,
   LocationDetail,
   MANIFEST_PATH,
   Manifest,
   eventId,
+  boundariesPath,
   listPath,
   locationPath,
   roundCoord,
@@ -42,6 +44,8 @@ const MIN_CONFIDENCE = 0.6;
  * site about restaurants closing.
  */
 const UNPUBLISHED_TYPES: BusinessType[] = ["food_retail"];
+/** Boundary simplification tolerance in degrees (~5 m): outlines, not surveys. */
+const BOUNDARY_TOLERANCE = 0.00005;
 /** Start of the coverage window; events dated before it aren't exported. */
 const SINCE = "2022-03-01";
 /** Which event an occupant shows when it has several (the contract allows one). */
@@ -375,18 +379,40 @@ async function exportCity(cityId: string): Promise<string> {
     closures: rows,
   });
 
-  // Content-hashed, so browsers and the CDN can cache it forever.
+  // Neighbourhood outlines, in the same order as the list's `hoods`.
+  const shapes: { name: string; geojson: string }[] = await sql`
+    select name,
+           ST_AsGeoJSON(ST_SimplifyPreserveTopology(geom, ${BOUNDARY_TOLERANCE}), 5) as geojson
+    from neighbourhoods where city_id = ${cityId} order by name
+  `;
+  const boundaries = Boundaries.parse({
+    v: CONTRACT_VERSION,
+    type: "FeatureCollection",
+    features: shapes.map((shape) => ({
+      type: "Feature",
+      properties: { name: shape.name },
+      geometry: JSON.parse(shape.geojson),
+    })),
+  });
+
+  // Content-hashed, so browsers and the CDN can cache them forever.
+  const contentHash = (json: string) =>
+    new Bun.CryptoHasher("sha256").update(json).digest("hex").slice(0, 8);
   const listJson = JSON.stringify(list);
-  const hash = new Bun.CryptoHasher("sha256")
-    .update(listJson)
-    .digest("hex")
-    .slice(0, 8);
-  const listRel = listPath(city.slug, hash);
+  const listRel = listPath(city.slug, contentHash(listJson));
+  const boundariesJson = JSON.stringify(boundaries);
+  const boundariesRel = boundariesPath(city.slug, contentHash(boundariesJson));
   const manifest = Manifest.parse({
     v: CONTRACT_VERSION,
     generated,
     cities: [
-      { slug: city.slug, name: city.name, list: listRel, count: rows.length },
+      {
+        slug: city.slug,
+        name: city.name,
+        list: listRel,
+        count: rows.length,
+        boundaries: boundariesRel,
+      },
     ],
   });
 
@@ -394,6 +420,7 @@ async function exportCity(cityId: string): Promise<string> {
   await rm(`${out}/${city.slug}`, { recursive: true, force: true });
   await mkdir(`${out}/${city.slug}/locations`, { recursive: true });
   await Bun.write(`${out}/${listRel}`, listJson);
+  await Bun.write(`${out}/${boundariesRel}`, boundariesJson);
   const BATCH = 200;
   for (let i = 0; i < details.length; i += BATCH)
     await Promise.all(
@@ -408,8 +435,9 @@ async function exportCity(cityId: string): Promise<string> {
     );
   await Bun.write(`${out}/${MANIFEST_PATH}`, JSON.stringify(manifest));
 
-  const kb = Math.round(Bun.gzipSync(Buffer.from(listJson)).length / 1024);
-  return `${count(rows.length)} closures at ${count(details.length)} locations (list ${kb} KB gzipped; ${count(beforeWindow)} events dated before ${SINCE} left out) → ${out}`;
+  const kb = (json: string) =>
+    Math.round(Bun.gzipSync(Buffer.from(json)).length / 1024);
+  return `${count(rows.length)} closures at ${count(details.length)} locations (list ${kb(listJson)} KB gzipped, ${count(boundaries.features.length)} neighbourhood outlines ${kb(boundariesJson)} KB; ${count(beforeWindow)} events dated before ${SINCE} left out) → ${out}`;
 }
 
 const [city]: { id: string }[] =

@@ -1,6 +1,7 @@
 import { createBrowserRouter, data, redirect } from "react-router";
+import type { ShouldRevalidateFunctionArgs } from "react-router";
 import { RouteError } from "./components/RouteError";
-import { cityLoader, locationLoader } from "./loaders";
+import { cityLoader, locationLoader, mapLoader } from "./loaders";
 import { AboutPage } from "./pages/about/AboutPage";
 import { Layout } from "./pages/Layout";
 import { ListPage } from "./pages/list/ListPage";
@@ -16,9 +17,22 @@ export const router = createBrowserRouter([
     ErrorBoundary: RouteError,
     HydrateFallback: () => <p>Loading…</p>,
     children: [
-      { index: true, loader: () => redirect("/map") },
-      { path: "map", loader: cityLoader, Component: MapPage },
-      { path: "list", loader: cityLoader, Component: ListPage },
+      {
+        index: true,
+        loader: ({ request }) => redirect(`/map${new URL(request.url).search}`),
+      },
+      {
+        path: "map",
+        loader: mapLoader,
+        shouldRevalidate: revalidateOnPathChange,
+        Component: MapPage,
+      },
+      {
+        path: "list",
+        loader: cityLoader,
+        shouldRevalidate: revalidateOnPathChange,
+        Component: ListPage,
+      },
       {
         path: "location/:id",
         loader: locationLoader,
@@ -34,3 +48,13 @@ export const router = createBrowserRouter([
     ],
   },
 ]);
+
+/** Filters live in the query string. The city list does not depend on them. */
+function revalidateOnPathChange({
+  currentUrl,
+  nextUrl,
+  defaultShouldRevalidate,
+}: ShouldRevalidateFunctionArgs) {
+  if (currentUrl.pathname === nextUrl.pathname) return false;
+  return defaultShouldRevalidate;
+}

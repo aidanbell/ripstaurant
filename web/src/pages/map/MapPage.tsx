@@ -1,17 +1,30 @@
-import { useLoaderData } from "react-router";
-import type { cityLoader } from "../../loaders";
+import { useMemo } from "react";
+import { useLoaderData, useSearchParams } from "react-router";
+import { FilterForm } from "../../components/FilterForm";
+import { applyFilters, parseFilters } from "../../filters";
+import type { mapLoader } from "../../loaders";
+import { ClosureMap } from "./ClosureMap";
 
 export function MapPage() {
-  const list = useLoaderData<typeof cityLoader>();
-  const [west, south, east, north] = list.city.bbox;
+  const { list, boundaries } = useLoaderData<typeof mapLoader>();
+  const [params] = useSearchParams();
+  const filters = useMemo(() => parseFilters(params), [params]);
+  const rows = useMemo(() => applyFilters(list, filters), [list, filters]);
+  const outline = useMemo(
+    () =>
+      boundaries?.features.find((f) => f.properties.name === filters.hood) ??
+      null,
+    [boundaries, filters.hood],
+  );
+
   return (
     <section>
       <h1>Map</h1>
+      <FilterForm list={list} filters={filters} />
       <p>
-        The map isn’t built yet. It will plot {list.closures.length} closures,
-        centred on {list.city.center.join(", ")}, within {west}, {south} to{" "}
-        {east}, {north}.
+        {rows.length} of {list.closures.length} closures
       </p>
+      <ClosureMap city={list.city} rows={rows} outline={outline} />
     </section>
   );
 }

@@ -1,7 +1,7 @@
 // Filters for the city list, shared by /map and /list so they always show the same rows.
 // The URL's search params are the only filter state: read them with parseFilters(),
-// derive the rows with applyFilters(), write them with <Form method="get"> or
-// setSearchParams. Repeated params are multi-select: ?type=permanent&type=relocated.
+// derive the rows with applyFilters(), write them from the filter form (it submits
+// on change). Repeated params are multi-select: ?type=permanent&type=relocated.
 //
 //   const rows = useMemo(() => applyFilters(list, parseFilters(params)), [list, params]);
 //

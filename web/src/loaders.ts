@@ -3,12 +3,21 @@
 
 import { data } from "react-router";
 import type { LoaderFunctionArgs } from "react-router";
-import { DataFileError, getLocation, loadCity } from "./data";
+import { DataFileError, getLocation, loadBoundaries, loadCity } from "./data";
 
 export const CITY = "toronto";
 
 export function cityLoader() {
   return loadCity(CITY);
+}
+
+/** The map also outlines a selected neighbourhood; both files load in parallel. */
+export async function mapLoader() {
+  const [list, boundaries] = await Promise.all([
+    loadCity(CITY),
+    loadBoundaries(CITY),
+  ]);
+  return { list, boundaries };
 }
 
 export async function locationLoader({ params }: LoaderFunctionArgs) {

@@ -15,6 +15,8 @@ export const Manifest = z.object({
         /** Path to the city's list file, relative to the manifest. Content-hashed, so cache forever. */
         list: z.string(),
         count: z.number().int().nonnegative(),
+        /** Path to the city's neighbourhood boundaries (see boundaries.ts); content-hashed. */
+        boundaries: z.string().optional(),
       }),
     )
     .min(1),

@@ -1,3 +1,4 @@
+export * from "./boundaries";
 export * from "./codes";
 export * from "./common";
 export * from "./detail";
