@@ -6,29 +6,17 @@
 //
 // Each dataset is one `ingests` row plus the source_records whose content hasn't been
 // stored before. Raw files are `<city>/<source>/<fetched-at>.csv.gz`, gzipped as downloaded.
-// A failing dataset doesn't stop the others; the job exits non-zero if any failed.
 
-import { parseArgs } from "node:util";
-import { CryptoHasher, gzipSync } from "bun";
+import { CryptoHasher } from "bun";
 import { sql } from "@ripstaurant/db";
 import { parse } from "csv-parse";
-import { resourceUrl, USER_AGENT } from "./ckan";
 import { TORONTO_DATASETS } from "./datasets";
 import type { BulkDataset, Row } from "./datasets";
-import { bucketStore, localStore } from "./storage";
+import { insertIngest, pull } from "./ingest";
+import { CITY, count, runJob } from "./job";
 import type { RawStore } from "./storage";
 
-const CITY = "toronto";
 const BATCH = 2000;
-
-const { values: args } = parseArgs({
-  options: {
-    only: { type: "string" },
-    upload: { type: "boolean", default: false },
-    // Read by @ripstaurant/db to allow a non-local database.
-    remote: { type: "boolean", default: false },
-  },
-});
 
 type Stored = {
   source_key: string;
@@ -41,19 +29,20 @@ async function snapshot(
   dataset: BulkDataset,
   store: RawStore,
 ): Promise<string> {
-  const url = await resourceUrl(dataset.pkg, dataset.resource);
-  const fetchedAt = new Date();
-  const res = await fetch(url, { headers: { "User-Agent": USER_AGENT } });
-  if (!res.ok) throw new Error(`HTTP ${res.status} fetching ${url}`);
-  const bytes = Buffer.from(await res.arrayBuffer());
-
-  const rawKey = `${CITY}/${dataset.source}/${fetchedAt.toISOString().replaceAll(":", "-")}.csv.gz`;
-  const rawSha256 = new CryptoHasher("sha256").update(bytes).digest("hex");
-  await store.write(rawKey, gzipSync(bytes));
+  const pulled = await pull(
+    store,
+    CITY,
+    dataset.source,
+    dataset.pkg,
+    dataset.resource,
+  );
 
   let rowCount = 0;
   const kept: Stored[] = [];
-  const rows = parse(bytes, { columns: true, bom: true }) as AsyncIterable<Row>;
+  const rows = parse(pulled.bytes, {
+    columns: true,
+    bom: true,
+  }) as AsyncIterable<Row>;
   for await (const row of rows) {
     if (rowCount++ === 0) {
       const missing = dataset.columns.filter((c) => !(c in row));
@@ -71,53 +60,37 @@ async function snapshot(
       raw_json: fields,
     });
   }
-  if (rowCount === 0) throw new Error(`no rows in ${url}`);
+  if (rowCount === 0) throw new Error(`no rows in ${pulled.url}`);
 
   const inserted = await sql.begin(async (tx) => {
-    const [ingest]: { id: string }[] = await tx`
-      insert into ingests (city_id, source, resource_url, fetched_at, raw_key, raw_sha256, row_count, kept_count)
-      values (${cityId}, ${dataset.source}, ${url}, ${fetchedAt}, ${rawKey}, ${rawSha256}, ${rowCount}, ${kept.length})
-      returning id
-    `;
-    let count = 0;
+    const ingestId = await insertIngest(
+      tx,
+      cityId,
+      pulled,
+      rowCount,
+      kept.length,
+    );
+    let n = 0;
     for (let i = 0; i < kept.length; i += BATCH) {
       const batch = kept.slice(i, i + BATCH).map((r) => ({
         ...r,
         city_id: cityId,
         source: dataset.source,
-        ingest_id: ingest?.id,
+        ingest_id: ingestId,
       }));
       const result =
         await tx`insert into source_records ${tx(batch)} on conflict do nothing`;
-      count += result.count;
+      n += result.count;
     }
-    return count;
+    return n;
   });
 
-  const n = (x: number) => x.toLocaleString("en-CA");
-  return `${n(rowCount)} rows, ${n(kept.length)} kept, ${n(inserted)} new → ${rawKey}`;
+  return `${count(rowCount)} rows, ${count(kept.length)} kept, ${count(inserted)} new → ${pulled.rawKey}`;
 }
 
-const datasets = args.only
-  ? TORONTO_DATASETS.filter((d) => d.source === args.only)
-  : TORONTO_DATASETS;
-if (!datasets.length) throw new Error(`unknown dataset "${args.only}"`);
-
-const store = args.upload ? bucketStore() : localStore();
-const [city]: { id: string }[] =
-  await sql`select id from cities where slug = ${CITY}`;
-if (!city) throw new Error(`city "${CITY}" not found; run bun run db:migrate`);
-
-console.log(`raw files → ${store.name}`);
-for (const dataset of datasets) {
-  const started = performance.now();
-  try {
-    const summary = await snapshot(city.id, dataset, store);
-    const secs = ((performance.now() - started) / 1000).toFixed(0);
-    console.log(`${dataset.source}: ${summary} (${secs}s)`);
-  } catch (error) {
-    console.error(`${dataset.source}: FAILED`, error);
-    process.exitCode = 1;
-  }
-}
-await sql.close();
+await runJob(
+  TORONTO_DATASETS.map((dataset) => ({
+    name: dataset.source,
+    run: (cityId, store) => snapshot(cityId, dataset, store),
+  })),
+);

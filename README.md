@@ -16,6 +16,8 @@ cp .env.example .env      # local DATABASE_URL
 bun run db:up             # local Postgres + PostGIS in Docker
 bun run db:migrate        # apply migrations (see db/README.md)
 bun run snapshot          # pull the open datasets into the local DB (see pipeline/README.md)
+bun run reference         # load neighbourhoods and Address Points
+bun run address:report    # how well each dataset's addresses match
 bun run sample            # rebuild contract/sample/ from the fixture
 bun run sample:synthetic  # 10k-row perf-test export (git-ignored)
 bun run typecheck         # every package, against the root tsconfig.base.json

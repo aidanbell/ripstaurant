@@ -14,7 +14,12 @@ export default defineConfig(
   },
   {
     // CLI scripts report progress on stdout.
-    files: ["src/snapshot.ts"],
+    files: [
+      "src/snapshot.ts",
+      "src/reference.ts",
+      "src/job.ts",
+      "src/address-report.ts",
+    ],
     rules: { "no-console": "off" },
   },
 );
