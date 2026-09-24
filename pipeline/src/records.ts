@@ -46,6 +46,8 @@ export type Licence = {
   cancelled: string | null;
   /** From category, endorsements and seating; null = no signal (patio licences). */
   businessType: BusinessType | null;
+  /** Licensed with the CHAIN condition. */
+  chain: boolean;
 };
 
 /** "12/29/2023" → "2023-12-29" (MM/DD/YYYY: the 2023 archive's day part reaches 31); other values unchanged. */
@@ -266,6 +268,7 @@ const LicenceRow = z.object({
 
 export function licenceFromRow(row: Row): Licence {
   const r = LicenceRow.parse(row);
+  const conditions = list(r.Conditions);
   return {
     number: r["Licence No."],
     category: r.Category,
@@ -276,7 +279,8 @@ export function licenceFromRow(row: Row): Licence {
     businessType: licenceBusinessType(
       r.Category,
       list(r.Endorsements),
-      list(r.Conditions),
+      conditions,
     ),
+    chain: conditions.includes("CHAIN"),
   };
 }

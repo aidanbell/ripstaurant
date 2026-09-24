@@ -94,3 +94,21 @@ Business types map to the contract's `BusinessType`:
 As of 2026-09-24, 66% of current DineSafe establishments get a type through the archive; the rest were first inspected after it (or aren't linked), and will take it from a matching licence in Phase 4.
 
 **Archive quirks handled by the snapshot:** the 2020–2022 files are wrapped in an extra pair of quotes (`""Rec #"` … `"""`); the 2023 file is Windows-1252, not UTF-8 (`ACADÉMIE`, `Café`); `Rec #` is a row number, left out like `_id`.
+
+## Entity resolution (Phase 4)
+
+```sh
+bun run resolve    # establishments, locations, occupancies, record_links; ~10 seconds
+```
+
+Rebuilds everything from `source_records` on each run, then writes it in place by stable keys (`establishments.source_key`, `locations.slug`), so ids survive re-runs and only what changed is written. An unchanged re-run writes nothing. Runs after the reference load in the Snapshot workflow.
+
+1. **Locations:** each record's address + unit (`AddressMatcher`), slugged as in the contract (`tor-116-geary-ave-unit-108a`). The address point supplies coordinates and neighbourhood; a location is still its own address.
+2. **DineSafe establishments:** ids linked by `oldEstId`, or sharing a location and a normalized name (`src/names.ts`), are one establishment, so a new DineSafe id after an ownership change still merges. Key: `dinesafe:<lowest id>`. Types the site doesn't cover are skipped.
+3. **Licences:** attached to the establishment at the same address with the most similar name (≥ 0.5) and overlapping dates (±1 year). At the exact same unit, one shared distinctive word is enough (`KEZY FOODS` / `KEZY DONER`); generic food and cuisine words don't count, since the next business in a unit often shares one. A licence gives its establishment an opening date, a type fallback and the chain flag. An unmatched food licence active since 2020 is an establishment of its own (`licence:<number>`); patio licences never are. Licences cancelled before 2020 are left out.
+4. **Cleanup:** untyped establishments with no licence whose name says institution or event booth (`SCHOOL`, `DAYCARE`, `- CNE 2025`) are skipped, since they need no business licence. An establishment's occupancies at the same street address that differ only by unit spelling (`Unit BLDG-MAIN FLOOR` / `Unit FLOOR`) fold into one.
+5. **Chains:** a name at 3+ locations that's at 5+ or licensed with the `CHAIN` condition. Variants join a brand only if someone uses the bare name (`STARBUCKS COFFEE #13035` → `STARBUCKS`, but `LUCKY'S MEATS` stays apart from `LUCKY'S CHINESE RESTAURANT`).
+
+As of 2026-09-24: 29,781 establishments (20k from DineSafe, 9.8k licence-only), 22,059 locations (104 without coordinates), 403 chains; 94% have a business type and 83% an opening date. Licence-only establishments are mostly real: licensed but not yet inspected, closed before the DineSafe window, or retailers in multi-tenant buildings.
+
+**Known limit:** an establishment's key is its lowest merged DineSafe id. If new data merges two establishments (or splits one), the key changes and the establishment gets a new id.

@@ -1,6 +1,7 @@
 # Pulls the bulk open datasets twice a month: raw files to R2, new or changed rows to
-# Neon, then refreshes the reference data (neighbourhoods, Address Points). Also runnable
-# by hand from the Actions tab. GitHub emails on failure.
+# Neon, then refreshes the reference data (neighbourhoods, Address Points) and rebuilds
+# establishments and locations from them. Also runnable by hand from the Actions tab.
+# GitHub emails on failure.
 
 name: Snapshot
 
@@ -36,3 +37,5 @@ jobs:
       # Runs even if a snapshot dataset failed; each job reports its own failures.
       - if: ${{ !cancelled() }}
         run: bun run reference --upload
+      - if: ${{ !cancelled() }}
+        run: bun run resolve

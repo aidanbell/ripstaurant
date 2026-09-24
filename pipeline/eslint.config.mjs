@@ -19,6 +19,7 @@ export default defineConfig(
       "src/reference.ts",
       "src/job.ts",
       "src/report.ts",
+      "src/resolve.ts",
     ],
     rules: { "no-console": "off" },
   },

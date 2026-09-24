@@ -25,6 +25,7 @@
     "snapshot": "bun pipeline/src/snapshot.ts",
     "reference": "bun pipeline/src/reference.ts",
     "report": "bun pipeline/src/report.ts",
+    "resolve": "bun pipeline/src/resolve.ts",
     "db:psql": "docker compose -f db/compose.yaml exec db psql -U ripstaurant"
   },
   "devDependencies": {

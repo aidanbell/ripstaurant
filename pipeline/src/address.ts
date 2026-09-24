@@ -191,8 +191,13 @@ export type MatchMethod =
   | "suffix_dropped" // "1718A" not a point; "1718" is
   | "nearby"; // number not a point; the closest same-side number within NEARBY_RANGE is
 
+/**
+ * `key` and `unit` are the record's own address after matching: unit text trimmed off the
+ * street ("301 FRONT ST W CN" → "301 FRONT ST W", unit "CN"). The point can be a
+ * neighbour's (`nearby`), so locations are identified by `key` + `unit`, not by the point.
+ */
 export type AddressMatch =
-  | { pointId: string; method: MatchMethod; unit: string | null }
+  | { pointId: string; method: MatchMethod; key: string; unit: string | null }
   /**
    * The address exists in more than one place (a street name shared by two former
    * municipalities: 97 Simpson Ave) and the record has no coordinates to choose by.
@@ -202,6 +207,7 @@ export type AddressMatch =
       pointId: null;
       method: "ambiguous";
       candidates: string[];
+      key: string;
       unit: string | null;
     };
 
@@ -258,11 +264,13 @@ export class AddressMatcher {
   /** Street → plain house number → point ids. */
   private readonly byStreet = new Map<string, Map<number, string[]>>();
   private readonly coords = new Map<string, LngLat>();
+  private readonly keys = new Map<string, string>();
 
   constructor(points: Iterable<IndexedPoint>) {
     for (const point of points) {
       this.bySourceKey.set(point.source_key, point.id);
       this.coords.set(point.id, [point.lng, point.lat]);
+      this.keys.set(point.id, point.match_key);
       push(this.byKey, point.match_key, point.id);
       const [, number, suffix, street] = KEY.exec(point.match_key) ?? [];
       if (!number || !street) continue;
@@ -283,31 +291,37 @@ export class AddressMatcher {
   ): AddressMatch | null {
     const unit = parsed?.unit ?? null;
     const byId = addressPointId && this.bySourceKey.get(addressPointId);
-    if (byId) return { pointId: byId, method: "id", unit };
+    if (byId) {
+      const key = parsed?.key ?? this.keys.get(byId) ?? "";
+      return { pointId: byId, method: "id", key, unit };
+    }
     if (!parsed) return null;
     const exact = this.byKey.get(parsed.key);
-    if (exact) return this.choose(exact, "exact", unit, near);
+    if (exact) return this.choose(exact, "exact", parsed.key, unit, near);
 
     const [, number = "", suffix = "", fullStreet = ""] =
       KEY.exec(parsed.key) ?? [];
     const found = this.knownStreet(fullStreet);
     if (!found) return null;
     const { street, rest } = found;
+    const key = `${number}${suffix} ${street}`;
     const streetUnit = rest ? (unit ?? normalizeUnit(rest)) : unit;
 
-    const same = this.byKey.get(`${number}${suffix} ${street}`);
+    const same = this.byKey.get(key);
     if (same)
       return this.choose(
         same,
         rest ? "unit_trimmed" : "exact",
+        key,
         streetUnit,
         near,
       );
     const numbers = this.byStreet.get(street);
     const plain = suffix ? numbers?.get(Number(number)) : undefined;
-    if (plain) return this.choose(plain, "suffix_dropped", streetUnit, near);
+    if (plain)
+      return this.choose(plain, "suffix_dropped", key, streetUnit, near);
     const nearby = numbers && nearest(numbers, Number(number));
-    if (nearby) return this.choose(nearby, "nearby", streetUnit, near);
+    if (nearby) return this.choose(nearby, "nearby", key, streetUnit, near);
     return null;
   }
 
@@ -315,22 +329,24 @@ export class AddressMatcher {
   private choose(
     ids: string[],
     method: MatchMethod,
+    key: string,
     unit: string | null,
     near: LngLat | null | undefined,
   ): AddressMatch {
     const [first] = ids;
     if (!first) throw new Error("empty candidate list");
-    if (ids.length === 1) return { pointId: first, method, unit };
+    if (ids.length === 1) return { pointId: first, method, key, unit };
     const at = (id: string) => this.coords.get(id) ?? [0, 0];
     if (near) {
       let best = first;
       for (const id of ids)
         if (metres(at(id), near) < metres(at(best), near)) best = id;
-      return { pointId: best, method, unit };
+      return { pointId: best, method, key, unit };
     }
     const spread = Math.max(...ids.map((id) => metres(at(first), at(id))));
-    if (spread <= SAME_PLACE_METRES) return { pointId: first, method, unit };
-    return { pointId: null, method: "ambiguous", candidates: ids, unit };
+    if (spread <= SAME_PLACE_METRES)
+      return { pointId: first, method, key, unit };
+    return { pointId: null, method: "ambiguous", candidates: ids, key, unit };
   }
 
   /** The street itself if known, else its longest known prefix; the rest is unit text. */
