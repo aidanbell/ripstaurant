@@ -1,0 +1,27 @@
+# Local Postgres + PostGIS, matching Neon (Postgres 17, PostGIS 3.5).
+# imresamu/postgis is the multi-arch build of postgis/postgis, which ships amd64 only.
+
+name: ripstaurant
+
+services:
+  db:
+    image: imresamu/postgis:17-3.5
+    environment:
+      POSTGRES_USER: ripstaurant
+      POSTGRES_PASSWORD: ripstaurant
+      POSTGRES_DB: ripstaurant
+    ports:
+      - "127.0.0.1:5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      # Skip the image's init script (tiger geocoder, topology), so migrations alone set
+      # up the database, as on Neon.
+      - /dev/null:/docker-entrypoint-initdb.d/10_postgis.sh:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ripstaurant -d ripstaurant"]
+      interval: 2s
+      timeout: 5s
+      retries: 30
+
+volumes:
+  pgdata:
