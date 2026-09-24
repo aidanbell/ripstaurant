@@ -7,6 +7,7 @@
     "typecheck": "tsc -p . --noEmit"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.128.0",
     "@ripstaurant/contract": "workspace:*",
     "@ripstaurant/db": "workspace:*",
     "csv-parse": "^7.0.2",

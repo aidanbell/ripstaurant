@@ -1,0 +1,29 @@
+# Checks the pipeline can reach the Claude API through Workload Identity Federation.
+# Run by hand from the Actions tab after changing the federation rule or its ids.
+
+name: Claude check
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  # Lets the job request a GitHub OIDC token, which it trades for an Anthropic one.
+  id-token: write
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    # The federation rule only accepts tokens from this environment, on main.
+    environment: production
+    timeout-minutes: 5
+    env:
+      ANTHROPIC_FEDERATION_RULE_ID: ${{ vars.ANTHROPIC_FEDERATION_RULE_ID }}
+      ANTHROPIC_ORGANIZATION_ID: ${{ vars.ANTHROPIC_ORGANIZATION_ID }}
+      ANTHROPIC_SERVICE_ACCOUNT_ID: ${{ vars.ANTHROPIC_SERVICE_ACCOUNT_ID }}
+      ANTHROPIC_WORKSPACE_ID: ${{ vars.ANTHROPIC_WORKSPACE_ID }}
+    steps:
+      - uses: actions/checkout@v5
+      - uses: oven-sh/setup-bun@v2
+      - run: bun install --frozen-lockfile
+      - run: bun run claude:check

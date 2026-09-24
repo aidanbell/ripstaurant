@@ -21,6 +21,7 @@ export default defineConfig(
       "src/report.ts",
       "src/resolve.ts",
       "src/detect.ts",
+      "src/claude-check.ts",
     ],
     rules: { "no-console": "off" },
   },
