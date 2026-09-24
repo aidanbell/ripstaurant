@@ -34,10 +34,12 @@ jobs:
     steps:
       # The PostGIS image gives a pg_dump that matches the server's version (17).
       - name: Dump
+        id: dump
         run: |
           NAME="ripstaurant-$(date -u +%Y-%m-%dT%H%MZ)"
           echo "NAME=$NAME" >> "$GITHUB_ENV"
-          docker run --rm -v "$PWD:/out" -e DATABASE_URL -e NAME imresamu/postgis:17-3.5 \
+          # NAME is a shell variable, not an exported one, so it's passed by value.
+          docker run --rm -v "$PWD:/out" -e DATABASE_URL -e NAME="$NAME" imresamu/postgis:17-3.5 \
             sh -c 'pg_dump --format=custom --no-owner --no-privileges --file="/out/$NAME.dump" "$DATABASE_URL"'
           sha256sum "$NAME.dump" > "$NAME.dump.sha256"
           ls -lh "$NAME.dump"
@@ -57,8 +59,9 @@ jobs:
           done
 
       - name: Upload to GitHub
-        # Runs even if the R2 upload failed, so one provider being down still leaves a backup.
-        if: ${{ !cancelled() }}
+        # Runs even if the R2 upload failed, so one provider being down still leaves a
+        # backup. Never without a dump.
+        if: ${{ !cancelled() && steps.dump.outcome == 'success' }}
         run: |
           gh release create "$NAME" "$NAME.dump" "$NAME.dump.sha256" \
             --repo "$BACKUP_REPO" --title "$NAME" \
