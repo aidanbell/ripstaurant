@@ -1,0 +1,14 @@
+{
+  "name": "@ripstaurant/pipeline",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "typecheck": "tsc -p . --noEmit"
+  },
+  "dependencies": {
+    "@ripstaurant/db": "workspace:*",
+    "csv-parse": "^7.0.2",
+    "zod": "^4.6.5"
+  }
+}
