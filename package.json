@@ -24,7 +24,7 @@
     "db:migrate": "bun db/src/migrate.ts",
     "snapshot": "bun pipeline/src/snapshot.ts",
     "reference": "bun pipeline/src/reference.ts",
-    "address:report": "bun pipeline/src/address-report.ts",
+    "report": "bun pipeline/src/report.ts",
     "db:psql": "docker compose -f db/compose.yaml exec db psql -U ripstaurant"
   },
   "devDependencies": {

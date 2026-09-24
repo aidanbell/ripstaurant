@@ -14,13 +14,14 @@ bun run snapshot --upload          # raw files to R2 instead (needs S3_* in the 
 
 Runs on the 1st and 15th of each month from `.github/workflows/snapshot.yml` (or by hand from the Actions tab), with `--upload`.
 
-| Source                     | Dataset                               | Kept in `source_records`                                        |
-| -------------------------- | ------------------------------------- | --------------------------------------------------------------- |
-| `dinesafe`                 | DineSafe (current feed, from 2023-11) | every row                                                       |
-| `business_licences`        | Business licences and permits         | food, nightclub and patio categories (~66k of 160k)             |
-| `building_permits_active`  | Building permits: active              | food-related use or description, or a demolition (~14k of 205k) |
-| `building_permits_cleared` | Building permits: cleared since 2017  | same filter (~37k of 439k)                                      |
-| `development_applications` | Development applications              | every row                                                       |
+| Source                     | Dataset                                            | Kept in `source_records`                                        |
+| -------------------------- | -------------------------------------------------- | --------------------------------------------------------------- |
+| `dinesafe`                 | DineSafe (current feed, from 2023-11)              | every row                                                       |
+| `dinesafe_archive`         | DineSafe archive, 2001–2023 (a ZIP of yearly CSVs) | inspections from 2020 on (~89k of 396k)                         |
+| `business_licences`        | Business licences and permits                      | food, nightclub and patio categories (~66k of 160k)             |
+| `building_permits_active`  | Building permits: active                           | food-related use or description, or a demolition (~14k of 205k) |
+| `building_permits_cleared` | Building permits: cleared since 2017               | same filter (~37k of 439k)                                      |
+| `development_applications` | Development applications                           | every row                                                       |
 
 Each pull of a dataset is:
 
@@ -60,8 +61,8 @@ Loads the City's 158 neighbourhoods and ~525k Address Points into `neighbourhood
 When an address has several points (a building's land, structure and entrance points, or two same-named streets), the one nearest the record's own coordinates wins; DineSafe has coordinates. A `nearby` match gives a location coordinates and a neighbourhood, but a location is still identified by its own address, so 219 and 217 stay separate places.
 
 ```sh
-bun run address:report             # match rates per dataset, most common misses
-bun run address:report --misses 40
+bun run report             # parse failures, business types, match rates, most common misses
+bun run report --misses 40
 ```
 
 As of 2026-09-24 (distinct addresses):
@@ -75,3 +76,21 @@ As of 2026-09-24 (distinct addresses):
 | Development applications  | 96.6%   | 6.5%              | 0.5%      |
 
 Checked against DineSafe's own coordinates: exact matches are a median 1 m away, `nearby` 21 m. The remaining misses are mostly large sites with no point nearby, streets newer than the Address Points file, typos, and permits with street number 0.
+
+## Typed records
+
+`src/records.ts` parses source_records rows into typed, validated records. A value a parser doesn't expect (a new inspection status, an unreadable date) throws, so a schema change shows up in `bun run report` instead of turning into bad data.
+
+| Record       | From                                                                                                                                                                                                                                                                    |
+| ------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `Inspection` | `inspectionFromCurrent`: the current DineSafe feed (camelCase columns, `YYYY-MM-DD`). `inspectionFromArchive`: the archive (`Establishment ID`…, `MM/DD/YYYY` dates in 2023). Current rows link to the archive by `oldEstId`                                            |
+| `Licence`    | `licenceFromRow`. The type vocabulary changed with the 2020 bylaw: `VICTUALLING` / `REFRESHMENTS` / `FOODSTUFFS` before, `EATING/DRINKING` / `TAKE-OUT OR RETAIL FOOD` after. Both map to a business type, with seating conditions separating restaurants from take-out |
+
+Business types map to the contract's `BusinessType`:
+
+- **DineSafe** (`dinesafeBusinessType`): the archive's 58 establishment types. Institutions (schools, care homes, hospitals), production (plants, commissaries, caterers) and anything without a storefront (carts, trucks, boats) map to `null`: inspected, but not covered by the site. A type not in the list is reported as new.
+- **Licences**: from category, endorsements and seating. Patio licences carry no type.
+
+As of 2026-09-24, 66% of current DineSafe establishments get a type through the archive; the rest were first inspected after it (or aren't linked), and will take it from a matching licence in Phase 4.
+
+**Archive quirks handled by the snapshot:** the 2020–2022 files are wrapped in an extra pair of quotes (`""Rec #"` … `"""`); the 2023 file is Windows-1252, not UTF-8 (`ACADÉMIE`, `Café`); `Rec #` is a row number, left out like `_id`.

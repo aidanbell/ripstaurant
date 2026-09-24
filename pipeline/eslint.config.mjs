@@ -18,7 +18,7 @@ export default defineConfig(
       "src/snapshot.ts",
       "src/reference.ts",
       "src/job.ts",
-      "src/address-report.ts",
+      "src/report.ts",
     ],
     rules: { "no-console": "off" },
   },

@@ -93,7 +93,13 @@ function streetKey(street: string): string {
     .replace(/['’.]/g, "")
     .replace(/[^A-Z0-9/ ]+/g, " ")
     .split(/\s+/)
-    .filter(Boolean);
+    .filter(Boolean)
+    // "MC CAUL" → "MCCAUL", as Address Points writes it.
+    .reduce<string[]>((out, token) => {
+      if (out.at(-1) === "MC") out[out.length - 1] = `MC${token}`;
+      else out.push(token);
+      return out;
+    }, []);
   let direction = "";
   const last = tokens.at(-1);
   if (tokens.length > 1 && last && last in DIRECTIONS) {
@@ -201,6 +207,16 @@ export type AddressMatch =
 
 /** [longitude, latitude] */
 export type LngLat = [number, number];
+
+/** From a dataset's longitude and latitude columns; null when missing or zero. */
+export function toLngLat(
+  lng: string | undefined,
+  lat: string | undefined,
+): LngLat | null {
+  const x = Number(lng);
+  const y = Number(lat);
+  return x && y ? [x, y] : null;
+}
 
 /** How far along a street to look for a missing number's neighbour: 219 → 217, 221, 215… */
 const NEARBY_RANGE = 10;

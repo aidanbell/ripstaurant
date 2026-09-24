@@ -15,13 +15,17 @@ export type Pulled = {
   rawSha256: string;
 };
 
-/** Downloads a CKAN resource and archives it gzipped at `<city>/<source>/<fetched-at>.<ext>.gz`. */
+/**
+ * Downloads a CKAN resource and archives it gzipped at `<city>/<source>/<fetched-at>.<ext>.gz`.
+ * `ext` defaults to the resource name's ("Dinesafe.csv" → csv).
+ */
 export async function pull(
   store: RawStore,
   city: string,
   source: string,
   pkg: string,
   resource: string,
+  ext = resource.split(".").at(-1)?.toLowerCase() ?? "bin",
 ): Promise<Pulled> {
   const url = await resourceUrl(pkg, resource);
   const fetchedAt = new Date();
@@ -40,7 +44,6 @@ export async function pull(
       `truncated download: ${bytes.length} of ${expected} bytes from ${url}`,
     );
 
-  const ext = resource.split(".").at(-1)?.toLowerCase() ?? "bin";
   const rawKey = `${city}/${source}/${fetchedAt.toISOString().replaceAll(":", "-")}.${ext}.gz`;
   const rawSha256 = new CryptoHasher("sha256").update(bytes).digest("hex");
   await store.write(rawKey, gzipSync(bytes));

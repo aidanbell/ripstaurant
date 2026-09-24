@@ -7,8 +7,10 @@
     "typecheck": "tsc -p . --noEmit"
   },
   "dependencies": {
+    "@ripstaurant/contract": "workspace:*",
     "@ripstaurant/db": "workspace:*",
     "csv-parse": "^7.0.2",
+    "fflate": "^0.8.3",
     "zod": "^4.6.5"
   }
 }

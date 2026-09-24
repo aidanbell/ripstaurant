@@ -9,8 +9,10 @@ import {
   parseAddressParts,
   parseDinesafeAddress,
   parseStreetAddress,
+  toLngLat,
 } from "./address";
 import type { LngLat, ParsedAddress } from "./address";
+import { fromUsDate } from "./records";
 
 export type Row = Record<string, string>;
 
@@ -20,6 +22,13 @@ export type BulkDataset = {
   /** CKAN package id and resource name. */
   pkg: string;
   resource: string;
+  /** The resource is a ZIP of CSVs (the DineSafe archive: one file per year). */
+  zip?: boolean;
+  /**
+   * Columns holding the row's position in its file, left out of the stored row: they'd
+   * make every row look new on the next pull. Default `_id` (the portal's row number).
+   */
+  positional?: string[];
   /** Columns the functions below read. The job fails if a file lacks any, e.g. after a schema change. */
   columns: string[];
   /** The record's id within the dataset. Not always unique (permit revisions repeat). */
@@ -65,6 +74,9 @@ const PERMIT_COLUMNS = [
   ...STREET_PARTS,
 ];
 
+/** Keeps archive inspections from 2020 on: closures from 2022-03 need each place's last inspection before it closed, and inspections were sparse in 2020–21. Older years stay in the City's archive. */
+const ARCHIVE_SINCE = "2020-01-01";
+
 function streetParts(row: Row): ParsedAddress | null {
   return parseAddressParts(
     row.STREET_NUM,
@@ -101,11 +113,29 @@ export const TORONTO_DATASETS: BulkDataset[] = [
     key: (row) => row.unique_id ?? "",
     keep: () => true,
     address: (row) => parseDinesafeAddress(row.address ?? ""),
-    near: (row) => {
-      const lng = Number(row.longitude);
-      const lat = Number(row.latitude);
-      return lng && lat ? [lng, lat] : null;
-    },
+    near: (row) => toLngLat(row.longitude, row.latitude),
+  },
+  {
+    // The yearly archive, 2001–2023, in the older schema. It carries each establishment's
+    // type, which the current feed doesn't; current rows link to it by `oldEstId`.
+    source: "dinesafe_archive",
+    pkg: "dinesafe",
+    resource: "Dinesafe Historical Data",
+    zip: true,
+    positional: ["Rec #"],
+    columns: [
+      "Establishment ID",
+      "Inspection ID",
+      "Establishment Address",
+      "Inspection Date",
+      "Latitude",
+      "Longitude",
+    ],
+    key: (row) => row["Inspection ID"] ?? "",
+    keep: (row) => fromUsDate(row["Inspection Date"] ?? "") >= ARCHIVE_SINCE,
+    // "266 EDDYSTONE AVE, Unit-0", "2190 MCNICOLL AVE, -109": unit after a comma.
+    address: (row) => parseStreetAddress(row["Establishment Address"] ?? ""),
+    near: (row) => toLngLat(row.Longitude, row.Latitude),
   },
   {
     source: "business_licences",
