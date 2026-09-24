@@ -36,6 +36,12 @@ import { CITY, count } from "./job";
 
 /** The threshold for showing a closure publicly (PLAN: open question). */
 const MIN_CONFIDENCE = 0.6;
+/**
+ * Business types kept in the database (they still count as successors when detecting
+ * closures) but not published: groceries and convenience stores are only adjacent to a
+ * site about restaurants closing.
+ */
+const UNPUBLISHED_TYPES: BusinessType[] = ["food_retail"];
 /** Start of the coverage window; events dated before it aren't exported. */
 const SINCE = "2022-03-01";
 /** Which event an occupant shows when it has several (the contract allows one). */
@@ -129,6 +135,7 @@ async function exportCity(cityId: string): Promise<string> {
       and ce.confidence >= ${MIN_CONFIDENCE}
       and ce.status <> 'retracted'
       and e.business_type is not null
+      and e.business_type not in ${sql(UNPUBLISHED_TYPES)}
       and l.geom is not null and l.neighbourhood_id is not null
   `;
   const chosen = new Map<string, EventRow>();
@@ -158,7 +165,8 @@ async function exportCity(cityId: string): Promise<string> {
            o.first_seen::text, o.last_seen::text,
            exists (select 1 from closure_events ce where ce.occupancy_id = o.id and ce.key = 'end') as ended
     from occupancies o join establishments e on e.id = o.establishment_id
-    where o.location_id in (
+    where (e.business_type is null or e.business_type not in ${sql(UNPUBLISHED_TYPES)})
+      and o.location_id in (
       select o2.location_id from occupancies o2
       join closure_events ce on ce.occupancy_id = o2.id
       where ce.id in ${sql(eventIds)}
