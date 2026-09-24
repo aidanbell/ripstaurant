@@ -12,7 +12,7 @@ import {
   toLngLat,
 } from "./address";
 import type { LngLat, ParsedAddress } from "./address";
-import { fromUsDate } from "./records";
+import { FOOD_USE, fromUsDate } from "./records";
 
 export type Row = Record<string, string>;
 
@@ -51,9 +51,6 @@ const FOOD_LICENCES = new Set([
   "SIDEWALK CAFE",
   "CURB LANE CAFE",
 ]);
-
-const FOOD_USE =
-  /restaurant|eating|take[- ]?out|caf[eé]|bakery|\bbar\b|\bpub\b|brew|food|night ?club|coffee/i;
 
 const STREET_PARTS = [
   "STREET_NUM",

@@ -18,6 +18,7 @@ bun run db:migrate        # apply migrations (see db/README.md)
 bun run snapshot          # pull the open datasets into the local DB (see pipeline/README.md)
 bun run reference         # load neighbourhoods and Address Points
 bun run resolve           # build establishments, locations and occupancies
+bun run detect            # detect closures, with evidence and documented reasons
 bun run report            # how well records parse and addresses match
 bun run sample            # rebuild contract/sample/ from the fixture
 bun run sample:synthetic  # 10k-row perf-test export (git-ignored)

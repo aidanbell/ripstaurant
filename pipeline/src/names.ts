@@ -14,7 +14,16 @@ const CORPORATE = new Set([
   "LLP",
 ]);
 
-/** "The Pizza Nova #123 Inc." → "PIZZA NOVA". Empty when nothing distinctive is left. */
+/** "SANDWICHES" → "SANDWICH", "PASTRIES" → "PASTRY", "BURGERS" → "BURGER"; "GLASS" stays. */
+function singular(word: string): string {
+  if (word.length <= 3 || /\d/.test(word) || /(SS|US|IS)$/.test(word))
+    return word;
+  if (word.endsWith("IES")) return `${word.slice(0, -3)}Y`;
+  if (/(CH|SH|X|Z)ES$/.test(word)) return word.slice(0, -2);
+  return word.endsWith("S") ? word.slice(0, -1) : word;
+}
+
+/** "The Pizza Nova #123 Inc." → "PIZZA NOVA", singular ("Brock Sandwiches" → "BROCK SANDWICH"). Empty when nothing distinctive is left. */
 export function nameKey(name: string): string {
   const tokens = name
     .normalize("NFKD")
@@ -25,7 +34,8 @@ export function nameKey(name: string): string {
     // Store numbers: "#123", "# 45".
     .replace(/#\s*\d+/g, " ")
     .split(/[^A-Z0-9]+/)
-    .filter((t) => t && !CORPORATE.has(t));
+    .filter((t) => t && !CORPORATE.has(t))
+    .map(singular);
   if (tokens[0] === "THE") tokens.shift();
   return tokens.join(" ");
 }
@@ -63,7 +73,9 @@ const GENERIC = new Set(
     "FISH MEAT MEATS BUTCHER GROCERY CONVENIENCE VARIETY SUPERMARKET FARM WINE BEER " +
     "AFRICAN ETHIOPIAN PERSIAN LEBANESE TURKISH MIDDLE EASTERN BRAZIL BRAZILIAN " +
     "PLACE SPOT CORNER STATION PLAZA CENTRE CENTER CITY STREET"
-  ).split(" "),
+  )
+    .split(" ")
+    .map(singular),
 );
 
 /** The names share a word that isn't a generic food word ("KEZY FOODS" and "KEZY DONER"). */

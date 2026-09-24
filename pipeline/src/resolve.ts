@@ -8,13 +8,15 @@
 // that changed are written.
 //
 // 1. Locations: each record's address + unit, matched to an address point.
-// 2. DineSafe: ids linked by oldEstId, or sharing a location and a normalized name, are
-//    one establishment (so a new DineSafe id after an ownership change still merges).
+// 2. DineSafe: ids linked by oldEstId, or sharing a street address and a normalized name,
+//    are one establishment (so a new DineSafe id after an ownership change still merges).
 //    Types the site doesn't cover (schools, plants, carts) are skipped.
 // 3. Licences: attached to the establishment at the same address with the most similar
 //    name and overlapping dates. An unmatched food licence active since 2020 is an
 //    establishment of its own.
 // 4. Chains: a name at 3+ locations that's at 5+, or licensed with the CHAIN condition.
+// 5. Permits and development applications: linked to the locations at their address, as
+//    evidence about the place (conversions, demolitions, redevelopment).
 
 import type { TransactionSQL } from "bun";
 import { slugify } from "@ripstaurant/contract";
@@ -55,6 +57,17 @@ const SAME_UNIT_MATCH = 0.6;
 const OVERLAP_DAYS = 365;
 /** Patio licences attach to a restaurant; on their own they aren't an establishment. */
 const PATIO = new Set(["SIDEWALK CAFE", "CURB LANE CAFE"]);
+/**
+ * Permits carry no unit, so one links to every occupied unit at its street address (or,
+ * failing that, its point), but only where there are at most this many: a permit at a
+ * mall's address says nothing about any one shop.
+ */
+const MAX_LOCATIONS_PER_ADDRESS = 3;
+const PLACE_SOURCES = [
+  "building_permits_active",
+  "building_permits_cleared",
+  "development_applications",
+];
 const CHAIN_MIN_LOCATIONS = 3;
 const CHAIN_SURE_LOCATIONS = 5;
 const BATCH = 5000;
@@ -253,8 +266,10 @@ async function resolve(cityId: string): Promise<string> {
       }
       const location = locate(dataset, row);
       const name = nameKey(inspection.name);
+      // The same name at the same street address is the same business, whatever unit
+      // spelling each record uses.
       if (location && name) {
-        const key = `${location.slug}|${name}`;
+        const key = `${location.key}|${name}`;
         const other = byNameAtLocation.get(key);
         if (other) union(node, other);
         else byNameAtLocation.set(key, node);
@@ -550,6 +565,55 @@ async function resolve(cityId: string): Promise<string> {
     if (name) for (const m of members) chainOf.set(m, name);
   }
 
+  // 5. Permits and development applications -------------------------------------------
+
+  // They carry no unit, so a permit links to every occupied unit at its street address.
+  const byStreetKey = new Map<string, string[]>();
+  const byPoint = new Map<string, string[]>();
+  const occupied = new Set<string>();
+  for (const e of establishments)
+    for (const slug of e.occupancies.keys()) {
+      const location = locations.get(slug);
+      if (!location || occupied.has(slug)) continue;
+      occupied.add(slug);
+      byStreetKey.set(location.key, [
+        ...(byStreetKey.get(location.key) ?? []),
+        slug,
+      ]);
+      if (location.pointId)
+        byPoint.set(location.pointId, [
+          ...(byPoint.get(location.pointId) ?? []),
+          slug,
+        ]);
+    }
+  const placeLinks: {
+    recordId: string;
+    slug: string;
+    confidence: number;
+  }[] = [];
+  for (const source of PLACE_SOURCES) {
+    const dataset = datasetFor(source);
+    const rows: { id: string; raw_json: Row }[] =
+      await sql`select id, raw_json from source_records where source = ${source}`;
+    for (const { id, raw_json: row } of rows) {
+      const match = matcher.match(
+        dataset.address(row),
+        dataset.addressPointId?.(row),
+        dataset.near?.(row),
+      );
+      if (!match) continue;
+      let slugs = byStreetKey.get(match.key) ?? [];
+      let confidence = 1;
+      if (!slugs.length && match.pointId) {
+        slugs = byPoint.get(match.pointId) ?? [];
+        confidence = 0.7;
+      }
+      if (slugs.length > MAX_LOCATIONS_PER_ADDRESS) continue;
+      for (const slug of slugs)
+        placeLinks.push({ recordId: id, slug, confidence });
+    }
+  }
+
   // Write -----------------------------------------------------------------------------
 
   const usedSlugs = new Set(
@@ -584,14 +648,22 @@ async function resolve(cityId: string): Promise<string> {
       last_seen: span.last,
     })),
   );
-  const stagedLinks = establishments.flatMap((e) =>
-    e.links.map((l) => ({
+  const stagedLinks = [
+    ...establishments.flatMap((e) =>
+      e.links.map((l) => ({
+        source_record_id: l.recordId,
+        source_key: e.sourceKey,
+        slug: l.slug,
+        match_confidence: l.confidence,
+      })),
+    ),
+    ...placeLinks.map((l) => ({
       source_record_id: l.recordId,
-      source_key: e.sourceKey,
+      source_key: null,
       slug: l.slug,
       match_confidence: l.confidence,
     })),
-  );
+  ];
 
   const written = await sql.begin((tx) =>
     write(tx, cityId, {
@@ -609,6 +681,7 @@ async function resolve(cityId: string): Promise<string> {
   return [
     `${count(establishments.length)} establishments (${count(fromDinesafe)} from DineSafe, ${count(ownEstablishment)} licence-only; ${count(notCovered)} DineSafe skipped as not covered)`,
     `${count(stagedLocations.length)} locations, ${count(stagedOccupancies.length)} occupancies (${count(multiLocation)} establishments at more than one, ${count(collapsed)} unit variants folded), ${count(chains)} chains`,
+    `${count(placeLinks.length)} permit and development application links`,
     `licences: ${count(matched)} matched to DineSafe, ${count(ownEstablishment)} own establishments, ${count(skippedUnmatched)} unmatched patio or unlocated, ${count(skippedOld)} cancelled before ${LICENCES_SINCE}; ${count(failed)} rows failed to parse`,
     `written: ${written}`,
   ].join("\n  ");
@@ -715,6 +788,45 @@ async function write(
     join establishments e on e.city_id = ${cityId} and e.source_key = s.source_key
     join locations l on l.city_id = ${cityId} and l.slug = s.slug
   `;
+  // Occupancies and establishments about to go may carry detect's events, evidence and
+  // links (rebuilt by the next \`bun run detect\`); clear those first. Anything else on
+  // them (news evidence, review decisions) still blocks the delete, so it's never lost.
+  await tx`
+    create temp table stale_occupancies on commit drop as
+    select o.id from occupancies o
+    join establishments e on e.id = o.establishment_id and e.city_id = ${cityId}
+    where not exists (
+      select 1 from resolved_occupancies r
+      where r.establishment_id = o.establishment_id and r.location_id = o.location_id
+    )
+  `;
+  await tx`
+    create temp table stale_establishments on commit drop as
+    select e.id from establishments e
+    where e.city_id = ${cityId}
+      and not exists (select 1 from staged_establishments s where s.source_key = e.source_key)
+  `;
+  await tx`
+    create temp table detect_evidence on commit drop as
+    select ev.id from evidence ev
+    left join closure_events ce on ce.id = ev.closure_event_id
+    where ev.source_record_id is not null and ev.match_status = 'auto'
+      and (ce.occupancy_id in (select id from stale_occupancies)
+           or ev.establishment_id in (select id from stale_establishments))
+  `;
+  await tx`delete from closure_reasons where evidence_id in (select id from detect_evidence)`;
+  await tx`delete from evidence where id in (select id from detect_evidence)`;
+  await tx`
+    delete from closure_events ce
+    where ce.occupancy_id in (select id from stale_occupancies)
+      and not exists (select 1 from evidence e where e.closure_event_id = ce.id)
+  `;
+  await tx`
+    delete from establishment_links
+    where from_establishment_id in (select id from stale_establishments)
+       or to_establishment_id in (select id from stale_establishments)
+  `;
+
   const staleOccupancies = await tx`
     delete from occupancies o
     using establishments e
@@ -737,15 +849,18 @@ async function write(
     create temp table resolved_links on commit drop as
     select s.source_record_id, e.id as establishment_id, l.id as location_id, s.match_confidence
     from staged_links s
-    join establishments e on e.city_id = ${cityId} and e.source_key = s.source_key
+    left join establishments e on e.city_id = ${cityId} and e.source_key = s.source_key
     left join locations l on l.city_id = ${cityId} and l.slug = s.slug
+    where e.id is not null or l.id is not null
   `;
   const staleLinks = await tx`
     delete from record_links rl
     using source_records sr
     where rl.source_record_id = sr.id
       and sr.city_id = ${cityId}
-      and sr.source in ('dinesafe', 'dinesafe_archive', 'business_licences')
+      and sr.source in ('dinesafe', 'dinesafe_archive', 'business_licences',
+                        'building_permits_active', 'building_permits_cleared',
+                        'development_applications')
       and not exists (
         select 1 from resolved_links r
         where r.source_record_id = rl.source_record_id

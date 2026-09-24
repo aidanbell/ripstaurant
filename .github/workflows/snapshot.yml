@@ -1,6 +1,6 @@
 # Pulls the bulk open datasets twice a month: raw files to R2, new or changed rows to
-# Neon, then refreshes the reference data (neighbourhoods, Address Points) and rebuilds
-# establishments and locations from them. Also runnable by hand from the Actions tab.
+# Neon, then refreshes the reference data (neighbourhoods, Address Points), rebuilds
+# establishments and locations, and detects closures. Also runnable by hand from the Actions tab.
 # GitHub emails on failure.
 
 name: Snapshot
@@ -39,3 +39,5 @@ jobs:
         run: bun run reference --upload
       - if: ${{ !cancelled() }}
         run: bun run resolve
+      - if: ${{ !cancelled() }}
+        run: bun run detect

@@ -20,6 +20,7 @@ export default defineConfig(
       "src/job.ts",
       "src/report.ts",
       "src/resolve.ts",
+      "src/detect.ts",
     ],
     rules: { "no-console": "off" },
   },

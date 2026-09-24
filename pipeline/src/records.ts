@@ -6,6 +6,9 @@
 //   Licence     Business licences, whose type vocabulary changed with the 2020 bylaw:
 //               VICTUALLING / REFRESHMENTS / FOODSTUFFS before, EATING/DRINKING and
 //               TAKE-OUT OR RETAIL FOOD after
+//   Permit      Building permits (active and cleared): conversions to and from food use,
+//               and demolitions
+//   DevApplication  Development applications: a site being redeveloped
 //
 // A value outside what each parser expects (a new status, an unreadable date) throws,
 // so schema changes surface in `bun run report` instead of becoming bad data.
@@ -282,5 +285,88 @@ export function licenceFromRow(row: Row): Licence {
       conditions,
     ),
     chain: conditions.includes("CHAIN"),
+  };
+}
+
+/**
+ * Food use in a permit's use or description. Includes the misspellings permits carry
+ * ("Restaurnat" is a proposed use 20 times), which would otherwise read as a conversion.
+ */
+export const FOOD_USE =
+  /rest(au|ua|ra|u)?r?a?n?t|restaurnat|eating|take[- ]?out|caf[eé]|bakery|\bbar\b|\bpub\b|brew|food|night ?club|coffee/i;
+
+/** "Same" as the proposed use: no change of use. */
+const SAME_USE = /^same\b/i;
+
+export type Permit = {
+  number: string;
+  applied: string | null;
+  issued: string | null;
+  demolition: boolean;
+  /** Food use before, and none after: the space stops being a restaurant. */
+  fromFood: boolean;
+  /** No food use before, food use after: a restaurant is coming. */
+  toFood: boolean;
+  currentUse: string | null;
+  proposedUse: string | null;
+};
+
+/** "2019-09-17", or the start of "2023-04-17T00:00:00". */
+const IsoPrefix = z
+  .string()
+  .transform((v) => (v.trim() === "" ? null : isoDate(v.slice(0, 10))));
+
+const PermitRow = z.object({
+  PERMIT_NUM: Text,
+  REVISION_NUM: z.string(),
+  PERMIT_TYPE: z.string(),
+  WORK: z.string(),
+  APPLICATION_DATE: IsoPrefix,
+  ISSUED_DATE: IsoPrefix,
+  CURRENT_USE: OptionalText,
+  PROPOSED_USE: OptionalText,
+});
+
+export function permitFromRow(row: Row): Permit {
+  const r = PermitRow.parse(row);
+  const before = r.CURRENT_USE ?? "";
+  const after = r.PROPOSED_USE ?? "";
+  const foodBefore = FOOD_USE.test(before);
+  const foodAfter = FOOD_USE.test(after) || SAME_USE.test(after);
+  return {
+    number: `${r.PERMIT_NUM}~${r.REVISION_NUM}`,
+    applied: r.APPLICATION_DATE,
+    issued: r.ISSUED_DATE,
+    demolition:
+      r.PERMIT_TYPE.startsWith("Demolition") || r.WORK.includes("Demolition"),
+    fromFood: foodBefore && after !== "" && !foodAfter,
+    toFood: !foodBefore && before !== "" && FOOD_USE.test(after),
+    currentUse: r.CURRENT_USE,
+    proposedUse: r.PROPOSED_USE,
+  };
+}
+
+export type DevApplication = {
+  number: string;
+  /** OZ (official plan / zoning amendment), SA (site plan), SB (subdivision), CD, PL. */
+  type: string;
+  submitted: string | null;
+  status: string;
+};
+
+const DevApplicationRow = z.object({
+  "APPLICATION#": Text,
+  APPLICATION_TYPE: Text,
+  DATE_SUBMITTED: IsoPrefix,
+  STATUS: z.string(),
+});
+
+export function devApplicationFromRow(row: Row): DevApplication {
+  const r = DevApplicationRow.parse(row);
+  return {
+    number: r["APPLICATION#"],
+    type: r.APPLICATION_TYPE,
+    submitted: r.DATE_SUBMITTED,
+    status: r.STATUS,
   };
 }

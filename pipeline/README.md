@@ -104,11 +104,42 @@ bun run resolve    # establishments, locations, occupancies, record_links; ~10 s
 Rebuilds everything from `source_records` on each run, then writes it in place by stable keys (`establishments.source_key`, `locations.slug`), so ids survive re-runs and only what changed is written. An unchanged re-run writes nothing. Runs after the reference load in the Snapshot workflow.
 
 1. **Locations:** each record's address + unit (`AddressMatcher`), slugged as in the contract (`tor-116-geary-ave-unit-108a`). The address point supplies coordinates and neighbourhood; a location is still its own address.
-2. **DineSafe establishments:** ids linked by `oldEstId`, or sharing a location and a normalized name (`src/names.ts`), are one establishment, so a new DineSafe id after an ownership change still merges. Key: `dinesafe:<lowest id>`. Types the site doesn't cover are skipped.
+2. **DineSafe establishments:** ids linked by `oldEstId`, or sharing a street address and a normalized name (singular: `BROCK SANDWICHES` = `BROCK SANDWICH`) (`src/names.ts`), are one establishment, so a new DineSafe id after an ownership change still merges. Key: `dinesafe:<lowest id>`. Types the site doesn't cover are skipped.
 3. **Licences:** attached to the establishment at the same address with the most similar name (≥ 0.5) and overlapping dates (±1 year). At the exact same unit, one shared distinctive word is enough (`KEZY FOODS` / `KEZY DONER`); generic food and cuisine words don't count, since the next business in a unit often shares one. A licence gives its establishment an opening date, a type fallback and the chain flag. An unmatched food licence active since 2020 is an establishment of its own (`licence:<number>`); patio licences never are. Licences cancelled before 2020 are left out.
 4. **Cleanup:** untyped establishments with no licence whose name says institution or event booth (`SCHOOL`, `DAYCARE`, `- CNE 2025`) are skipped, since they need no business licence. An establishment's occupancies at the same street address that differ only by unit spelling (`Unit BLDG-MAIN FLOOR` / `Unit FLOOR`) fold into one.
-5. **Chains:** a name at 3+ locations that's at 5+ or licensed with the `CHAIN` condition. Variants join a brand only if someone uses the bare name (`STARBUCKS COFFEE #13035` → `STARBUCKS`, but `LUCKY'S MEATS` stays apart from `LUCKY'S CHINESE RESTAURANT`).
+5. **Permits and development applications** link to the locations at their street address (or its address point), as evidence about the place. They carry no unit, so an address with more than 3 occupied units is skipped: a permit at a mall says nothing about one shop.
+6. **Chains:** a name at 3+ locations that's at 5+ or licensed with the `CHAIN` condition. Variants join a brand only if someone uses the bare name (`STARBUCKS COFFEE #13035` → `STARBUCKS`, but `LUCKY'S MEATS` stays apart from `LUCKY'S CHINESE RESTAURANT`).
 
 As of 2026-09-24: 29,781 establishments (20k from DineSafe, 9.8k licence-only), 22,059 locations (104 without coordinates), 403 chains; 94% have a business type and 83% an opening date. Licence-only establishments are mostly real: licensed but not yet inspected, closed before the DineSafe window, or retailers in multi-tenant buildings.
 
 **Known limit:** an establishment's key is its lowest merged DineSafe id. If new data merges two establishments (or splits one), the key changes and the establishment gets a new id.
+
+Before removing an occupancy or establishment that new data no longer produces, resolve clears `detect`'s own events, evidence and links on it (the next `detect` rebuilds them). Anything else on it, such as news evidence or a review decision, blocks the delete instead.
+
+## Closure detection (Phase 4)
+
+```sh
+bun run detect    # closure_events, evidence, closure_reasons, establishment_links; ~2 seconds
+```
+
+Rebuilt on every run and written in place, like resolve: events by `(occupancy, key)`, evidence by `(event, record, claim)`. It only touches its own rows (evidence from a bulk record with `match_status = 'auto'`); news evidence and reviewed rows are left alone. Runs after resolve in the Snapshot workflow.
+
+**How an occupancy ends.** Each signal adds evidence pointing at the record behind it, and a weight; they combine as `1 − Π(1 − weight)`, and the result is multiplied by 0.6 if the establishment still holds an active licence (it may be open, or its licence not yet cancelled).
+
+| Signal     | Weight            | Evidence                                                                                                       |
+| ---------- | ----------------- | -------------------------------------------------------------------------------------------------------------- |
+| stopped    | 0.35 / 0.55 / 0.7 | No inspection for 18 months / 2 years / 3 years. Open places' gaps: median 148 days, p95 434, p99 710          |
+| licence    | 0.5               | Every licence cancelled, no earlier than 6 months before the last inspection                                   |
+| successor  | 0.5               | A business with a different name first seen at the same place afterwards                                       |
+| conversion | 0.35              | A permit changing the space from food use to something else                                                    |
+| relocation | 0.6               | The same business at another address afterwards (within 18 months, not a chain)                                |
+| demolition | 0.3               | A demolition permit at the address (also a documented `redevelopment` reason)                                  |
+| health     | 0.3               | A DineSafe closure order within 90 days of the last inspection (also a documented `health_enforcement` reason) |
+
+An occupancy is only an event if some signal says it ended (stopped, licence, successor, conversion or relocation); a reason alone isn't enough. The date is a range: from the last inspection to the earliest bound a signal gives (the licence cancellation, the successor's first sighting). Events are kept if they land on or after 2022-03-01: the upper bound is after it, or, with no upper bound, the last inspection is no more than a year before it.
+
+**Types.** `relocated` when the business moved; `rebranded` when the successor is licensed to the same owner; otherwise `permanent`. Also detected: `temporary` (a closure order, then a passing inspection within a year; confidence 0.95) and `ownership_change` (a cancelled licence followed within −6/+12 months by a new owner's licence under the same name; 0.8, hidden by default in the contract).
+
+**Reasons** (`closure_reasons`, all documented unless noted): `health_enforcement` from DineSafe closure orders; `redevelopment` from demolition permits and zoning-amendment or subdivision applications (`OZ`, `SB`) submitted up to 5 years before, and as a `signal` from site plans (`SA`).
+
+As of 2026-09-24: 11,781 events, including 10,033 permanent, 497 relocations, 50 rebrands, 69 temporary and 1,132 ownership changes. Of the 10,580 end-of-occupancy events, 5,851 have confidence ≥ 0.6, about 1,100–1,500 a year. Against the contract's 25 hand-researched closures: all 17 that bulk data can show are detected, each with a date range containing the real date. The other 8 are announcements or format changes (news, Phase 5), a closure in the gap between the archive and the current feed, or not in the City's data.
