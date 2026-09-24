@@ -4,6 +4,7 @@
   "type": "module",
   "workspaces": [
     "contract",
+    "db",
     "web",
     "research/*"
   ],
@@ -15,7 +16,12 @@
     "lint": "eslint .",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "start:web": "bun run --filter @ripstaurant/web dev"
+    "start:web": "bun run --filter @ripstaurant/web dev",
+    "db:up": "docker compose -f db/compose.yaml up -d --wait",
+    "db:down": "docker compose -f db/compose.yaml down",
+    "db:reset": "docker compose -f db/compose.yaml down -v && bun run db:up && bun run db:migrate",
+    "db:migrate": "bun db/src/migrate.ts",
+    "db:psql": "docker compose -f db/compose.yaml exec db psql -U ripstaurant"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
