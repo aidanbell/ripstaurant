@@ -1,8 +1,9 @@
 // The bulk open datasets the snapshot job pulls from Toronto's open data portal.
 //
-// The raw file always keeps every row. `keep` picks the rows stored in source_records:
-// the ones that can say something about a food business. Widening a filter later means
-// re-reading archived raw files, not refetching.
+// The raw file keeps every row (for 180 days). `keep` picks the rows stored in
+// source_records, the durable history: the ones that can say something about a food
+// business. Widening a filter means re-reading recent raw files, or refetching: most of
+// these files keep their own history (DineSafe, whose rows age out, is kept whole).
 
 import {
   parseAddressParts,

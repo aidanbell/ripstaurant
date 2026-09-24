@@ -28,8 +28,8 @@ export async function pull(
   const res = await fetch(url, { headers: { "User-Agent": USER_AGENT } });
   if (!res.ok) throw new Error(`HTTP ${res.status} fetching ${url}`);
   const bytes = Buffer.from(await res.arrayBuffer());
-  // A dropped connection can end the body early without an error, and an archived
-  // file can't be fetched again later. (With content-encoding, the length is compressed.)
+  // A dropped connection can end the body early without an error, and a pull can't be
+  // repeated for a past date. (With content-encoding, the length is compressed.)
   const expected = Number(res.headers.get("content-length"));
   if (
     expected &&

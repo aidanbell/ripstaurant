@@ -24,11 +24,11 @@ Runs on the 1st and 15th of each month from `.github/workflows/snapshot.yml` (or
 
 Each pull of a dataset is:
 
-1. The raw CSV, gzipped as downloaded, at `toronto/<source>/<fetched-at>.csv.gz`. Every row, always.
+1. The raw CSV, gzipped as downloaded, at `toronto/<source>/<fetched-at>.csv.gz`. Every row. Kept for **180 days** (an R2 lifecycle rule), for re-parsing and debugging recent pulls.
 2. One `ingests` row: resource URL, fetch time, raw file key and sha256, row and kept counts.
-3. `source_records` for kept rows whose content hasn't been stored before. An unchanged row isn't stored again, so later pulls add only what changed (a new inspection, a cancelled licence, a renamed establishment).
+3. `source_records` for kept rows whose content hasn't been stored before. An unchanged row isn't stored again, so later pulls add only what changed (a new inspection, a cancelled licence, a renamed establishment). This is the durable history, backed up with the rest of the database (see `db/README.md`).
 
-Filters live in `src/datasets.ts`. Widening one means re-reading archived raw files, not refetching. If the City renames a column a filter or key depends on, that dataset fails loudly rather than storing nothing.
+Filters live in `src/datasets.ts`. Widening one means re-reading recent raw files, or refetching: licences, permits and development applications keep their own history, and DineSafe (whose rows age out of the City's feed) is kept whole. If the City renames a column a filter or key depends on, that dataset fails loudly rather than storing nothing.
 
 A full run takes about 20 seconds and 1.4 GB of memory. The first load is ~260k rows (~280 MB in Postgres) and ~130 MB of raw files.
 

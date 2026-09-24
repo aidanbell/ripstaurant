@@ -1,0 +1,76 @@
+# Backs up the production database after each Snapshot run (data only changes then),
+# or by hand. One pg_dump goes to two providers: R2 under backups/, and a release in a
+# private GitHub repo. Both keep 180 days, like raw files: R2 by its bucket lifecycle
+# rule, GitHub by the prune step below, which always keeps the newest 3.
+#
+# Restore: see db/README.md.
+
+name: Backup
+
+on:
+  workflow_run:
+    workflows: [Snapshot]
+    types: [completed]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: backup
+  cancel-in-progress: false
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+    environment: production
+    timeout-minutes: 30
+    env:
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
+      # owner/name of the private backups repo, e.g. aidanbell/ripstaurant-backups.
+      BACKUP_REPO: ${{ vars.BACKUP_REPO }}
+      # Fine-grained token with Contents: read and write on BACKUP_REPO only.
+      GH_TOKEN: ${{ secrets.BACKUP_REPO_TOKEN }}
+    steps:
+      # The PostGIS image gives a pg_dump that matches the server's version (17).
+      - name: Dump
+        run: |
+          NAME="ripstaurant-$(date -u +%Y-%m-%dT%H%MZ)"
+          echo "NAME=$NAME" >> "$GITHUB_ENV"
+          docker run --rm -v "$PWD:/out" -e DATABASE_URL -e NAME imresamu/postgis:17-3.5 \
+            sh -c 'pg_dump --format=custom --no-owner --no-privileges --file="/out/$NAME.dump" "$DATABASE_URL"'
+          sha256sum "$NAME.dump" > "$NAME.dump.sha256"
+          ls -lh "$NAME.dump"
+
+      - name: Upload to R2
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.S3_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.S3_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: auto
+          # Newer AWS CLIs add checksums R2 doesn't need; only send them when required.
+          AWS_REQUEST_CHECKSUM_CALCULATION: when_required
+          S3_ENDPOINT: ${{ secrets.S3_ENDPOINT }}
+          S3_BUCKET: ${{ secrets.S3_BUCKET }}
+        run: |
+          for f in "$NAME.dump" "$NAME.dump.sha256"; do
+            aws s3 cp "$f" "s3://$S3_BUCKET/backups/$f" --endpoint-url "$S3_ENDPOINT"
+          done
+
+      - name: Upload to GitHub
+        # Runs even if the R2 upload failed, so one provider being down still leaves a backup.
+        if: ${{ !cancelled() }}
+        run: |
+          gh release create "$NAME" "$NAME.dump" "$NAME.dump.sha256" \
+            --repo "$BACKUP_REPO" --title "$NAME" \
+            --notes "pg_dump of production, $(du -h "$NAME.dump" | cut -f1)."
+
+      - name: Prune GitHub backups older than 180 days
+        # Only after a successful upload, and never the newest 3, so failed runs can't
+        # delete every backup.
+        if: ${{ success() }}
+        run: |
+          gh release list --repo "$BACKUP_REPO" --limit 200 --json tagName,createdAt \
+            --jq 'sort_by(.createdAt) | reverse | .[3:] | map(select(.createdAt < (now - 180*86400 | todate))) | .[].tagName' |
+          while read -r tag; do
+            gh release delete "$tag" --repo "$BACKUP_REPO" --yes --cleanup-tag
+          done
