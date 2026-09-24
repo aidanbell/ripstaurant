@@ -5,6 +5,7 @@
   "workspaces": [
     "contract",
     "db",
+    "pipeline",
     "web",
     "research/*"
   ],
@@ -21,6 +22,7 @@
     "db:down": "docker compose -f db/compose.yaml down",
     "db:reset": "docker compose -f db/compose.yaml down -v && bun run db:up && bun run db:migrate",
     "db:migrate": "bun db/src/migrate.ts",
+    "snapshot": "bun pipeline/src/snapshot.ts",
     "db:psql": "docker compose -f db/compose.yaml exec db psql -U ripstaurant"
   },
   "devDependencies": {

@@ -24,5 +24,6 @@ bun run db:down        # stop the container (data is kept)
 `migrations/NNNN_name.sql`, applied in filename order, each in its own transaction, and recorded in `schema_migrations` with a checksum. **Never edit an applied migration**: the runner refuses to continue if one changed. Add a new file instead.
 
 - Vocabularies (event types, statuses, reason codes, claims) are `text` + `CHECK`, and mirror `contract/src/codes.ts`. Change the contract first, then add a migration.
-- `source_records` is append-only: a trigger rejects `UPDATE` and `DELETE`.
+- `ingests` and `source_records` are append-only: a trigger rejects `UPDATE` and `DELETE`. Rows are identified by content hash, so an unchanged record is stored once (see `pipeline/README.md`).
+- Scripts refuse a non-local `DATABASE_URL` outside CI unless run with `--remote`.
 - CI applies every migration to a fresh database on each push. Production (Neon) is migrated by hand with the **Migrate** workflow in GitHub Actions.

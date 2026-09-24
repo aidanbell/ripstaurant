@@ -2,6 +2,7 @@
 // records it in schema_migrations.
 //
 //   bun run db:migrate
+//   bun run db:migrate --remote   # a non-local database, outside CI
 //
 // Applied migrations must not change (a checksum catches it): add a new file instead.
 
