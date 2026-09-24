@@ -143,3 +143,18 @@ An occupancy is only an event if some signal says it ended (stopped, licence, su
 **Reasons** (`closure_reasons`, all documented unless noted): `health_enforcement` from DineSafe closure orders; `redevelopment` from demolition permits and zoning-amendment or subdivision applications (`OZ`, `SB`) submitted up to 5 years before, and as a `signal` from site plans (`SA`).
 
 As of 2026-09-24: 11,781 events, including 10,033 permanent, 497 relocations, 50 rebrands, 69 temporary and 1,132 ownership changes. Of the 10,580 end-of-occupancy events, 5,851 have confidence ≥ 0.6, about 1,100–1,500 a year. Against the contract's 25 hand-researched closures: all 17 that bulk data can show are detected, each with a date range containing the real date. The other 8 are announcements or format changes (news, Phase 5), a closure in the gap between the archive and the current feed, or not in the City's data.
+
+## Export (Phase 7)
+
+```sh
+bun run export                    # to web/public/data/, which the dev server serves at /data/
+bun run export --out some/dir
+```
+
+Writes the public dataset in the contract's format: `manifest.json`, `toronto/closures.<hash>.json` and one `toronto/locations/<id>.json` per location with an exported closure. Every file is validated against `contract/` before it's written, and the list is derived from the detail files (`rowsFromLocation`), so the two can't disagree.
+
+- **What's exported:** events with confidence ≥ 0.6 (`MIN_CONFIDENCE`, PLAN's open question), a business type, and a place on the map, dated on or after 2022-03-01. The contract allows one event per occupant; the end of the occupancy wins over an ownership change or a temporary closure.
+- **What never is:** confidence scores, match statuses, licence owners, internal ids. Evidence and reasons cite the dataset their record came from, with its retrieval date.
+- **Detail files** show every occupant at the address, oldest first; one with no detected end is `to: null` (still here).
+
+As of 2026-09-24: 6,719 closures at 5,253 locations (5,399 permanent, 949 ownership changes, 275 relocations, 52 temporary, 44 rebrands); the list is 402 KB gzipped. Not yet in a workflow: it runs once the site's hosting is set up.
