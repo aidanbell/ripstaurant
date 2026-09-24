@@ -1,19 +1,26 @@
 {
-  "$schema": "https://json.schemastore.org/tsconfig",
-  "extends": "../tsconfig.base.json",
   "compilerOptions": {
     "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.app.tsbuildinfo",
-    "target": "ES2023",
+    "target": "es2023",
     "lib": ["ES2023", "DOM"],
-    "module": "ESNext",
-    "moduleResolution": "bundler",
-    "moduleDetection": "force",
+    "module": "esnext",
     "types": ["vite/client"],
-    "jsx": "react-jsx",
-    "allowImportingTsExtensions": true,
     "allowArbitraryExtensions": true,
+    "skipLibCheck": true,
+
+    /* Bundler mode */
+    "moduleResolution": "bundler",
+    "allowImportingTsExtensions": true,
+    "verbatimModuleSyntax": true,
+    "moduleDetection": "force",
+    "noEmit": true,
+    "jsx": "react-jsx",
+
+    /* Linting */
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
     "erasableSyntaxOnly": true,
-    "noEmit": true
+    "noFallthroughCasesInSwitch": true
   },
   "include": ["src"]
 }
