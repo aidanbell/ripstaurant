@@ -7,6 +7,7 @@
     "dev": "vite",
     "build": "tsc --noEmit && vite build",
     "typecheck": "tsc --noEmit",
+    "deploy": "wrangler deploy",
     "lint": "eslint .",
     "preview": "vite preview"
   },
@@ -35,6 +36,7 @@
     "tailwindcss": "^4.3.3",
     "typescript": "~6.0.2",
     "typescript-eslint": "^8.69.0",
-    "vite": "^8.3.0"
+    "vite": "^8.3.0",
+    "wrangler": "4.140.0"
   }
 }

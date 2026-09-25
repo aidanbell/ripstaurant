@@ -161,6 +161,12 @@ async function exportCity(cityId: string): Promise<string> {
       chosen.set(event.occupancy_id, event);
   }
   const eventIds = [...chosen.values()].map((e) => e.event_id);
+  // Nothing to publish means the pipeline hasn't run here yet; an empty site is worse
+  // than a failed deploy.
+  if (!eventIds.length)
+    throw new Error(
+      "no closures to export: has the Snapshot workflow (snapshot → reference → resolve → detect) run on this database?",
+    );
 
   // Every occupancy at the locations those events are at, for the location's history.
   const occupancies: OccupancyRow[] = await sql`
