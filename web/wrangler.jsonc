@@ -1,0 +1,17 @@
+// The site is a static-assets-only Cloudflare Worker: web/dist/ (the Vite build, with the
+// exported data under /data/). Deployed by .github/workflows/deploy.yml; no Worker script.
+{
+  "$schema": "https://unpkg.com/wrangler@4/config-schema.json",
+  "name": "ripstaurant",
+  "compatibility_date": "2026-09-01",
+  // Only reachable at ripstaurant.ca: no <name>.<account>.workers.dev address (it would
+  // include the account's subdomain) and no per-version preview addresses.
+  "workers_dev": false,
+  "preview_urls": false,
+  "assets": {
+    "directory": "./dist",
+    // Unknown paths (/location/tor-…, /map?hood=…) get index.html and the router takes
+    // over. Missing data files get it too, with a 200, which web/src/data.ts treats as 404.
+    "not_found_handling": "single-page-application",
+  },
+}

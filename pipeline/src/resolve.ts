@@ -436,10 +436,16 @@ async function resolve(cityId: string): Promise<string> {
       matched++;
       establishment = best;
       confidence = bestScore;
-    } else if (location && !PATIO.has(licence.category)) {
+    } else if (
+      location &&
+      !PATIO.has(licence.category) &&
+      // A licence with no operating name would be named after its owner, who can be a
+      // person. Owner names stay internal (used for matching, never published).
+      licence.operatingName
+    ) {
       // Its own establishment; licences under the same name at the same address (an
       // ownership change) are one.
-      const name = licence.operatingName ?? licence.owner;
+      const name = licence.operatingName;
       const groupKey = `${location.slug}|${nameKey(name)}`;
       const existing = licenceOnly.get(groupKey);
       if (existing) {
@@ -682,7 +688,7 @@ async function resolve(cityId: string): Promise<string> {
     `${count(establishments.length)} establishments (${count(fromDinesafe)} from DineSafe, ${count(ownEstablishment)} licence-only; ${count(notCovered)} DineSafe skipped as not covered)`,
     `${count(stagedLocations.length)} locations, ${count(stagedOccupancies.length)} occupancies (${count(multiLocation)} establishments at more than one, ${count(collapsed)} unit variants folded), ${count(chains)} chains`,
     `${count(placeLinks.length)} permit and development application links`,
-    `licences: ${count(matched)} matched to DineSafe, ${count(ownEstablishment)} own establishments, ${count(skippedUnmatched)} unmatched patio or unlocated, ${count(skippedOld)} cancelled before ${LICENCES_SINCE}; ${count(failed)} rows failed to parse`,
+    `licences: ${count(matched)} matched to DineSafe, ${count(ownEstablishment)} own establishments, ${count(skippedUnmatched)} unmatched patio, unnamed or unlocated, ${count(skippedOld)} cancelled before ${LICENCES_SINCE}; ${count(failed)} rows failed to parse`,
     `written: ${written}`,
   ].join("\n  ");
 }

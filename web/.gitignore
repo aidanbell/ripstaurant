@@ -25,3 +25,6 @@ dist-ssr
 
 # Site data from `bun run export` (generated)
 public/data/
+
+# Wrangler local state
+.wrangler/

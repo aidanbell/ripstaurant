@@ -1,0 +1,25 @@
+# Response headers for the deployed site (Cloudflare static assets). A request matching
+# several rules gets all their headers, with duplicates joined by commas, so no two rules
+# below set Cache-Control for the same path.
+
+# The manifest points at the current export: always revalidate.
+/data/manifest.json
+  Cache-Control: no-cache
+
+# Content-hashed: a new export gets a new name, so these never change.
+/data/:city/closures.*
+  Cache-Control: public, max-age=31536000, immutable
+/data/:city/neighbourhoods.*
+  Cache-Control: public, max-age=31536000, immutable
+/assets/*
+  Cache-Control: public, max-age=31536000, immutable
+
+# Not content-hashed (named by location id), so a re-export can change them.
+/data/:city/locations/*
+  Cache-Control: public, max-age=600
+
+/*
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  X-Frame-Options: DENY
+  Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=()
