@@ -1,11 +1,12 @@
-import type { Boundary, CityList, ClosureRow } from "@ripstaurant/contract";
+import type {
+  Boundaries,
+  Boundary,
+  CityList,
+  ClosureRow,
+} from "@ripstaurant/contract";
 import type { FeatureCollection, Point } from "geojson";
 import { MapLibreMap, NavigationControl, setWorkerUrl } from "maplibre-gl";
-import type {
-  GeoJSONSource,
-  LngLatBoundsLike,
-  MapLayerMouseEvent,
-} from "maplibre-gl";
+import type { GeoJSONSource, MapLayerMouseEvent } from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
 import workerUrl from "maplibre-gl/dist/maplibre-gl-worker.mjs?worker&url";
 import { useEffect, useRef } from "react";
@@ -26,6 +27,8 @@ setWorkerUrl(workerUrl);
 const FONT = "Noto Sans Regular";
 const SOURCE = "closures";
 const OUTLINE = "outline";
+/** Every neighbourhood, invisible until hovered: the click target for picking one. */
+const HOODS = "hoods";
 const INK = "#222";
 const NOTHING: FeatureCollection = { type: "FeatureCollection", features: [] };
 
@@ -43,36 +46,60 @@ function toGeoJSON(rows: ClosureRow[]): FeatureCollection<Point, Properties> {
   };
 }
 
-/** The [west, south, east, north] box around a boundary's rings. */
-function boundsOf(boundary: Boundary): LngLatBoundsLike {
-  const polygons =
-    boundary.geometry.type === "Polygon"
-      ? [boundary.geometry.coordinates]
-      : boundary.geometry.coordinates;
+type Box = [west: number, south: number, east: number, north: number];
+
+/** The box around a set of boundaries; null for none. */
+function boundsOf(boundaries: readonly Boundary[]): Box | null {
   let [w, s, e, n] = [Infinity, Infinity, -Infinity, -Infinity];
-  for (const polygon of polygons)
-    for (const ring of polygon)
-      for (const [lng, lat] of ring) {
-        w = Math.min(w, lng);
-        s = Math.min(s, lat);
-        e = Math.max(e, lng);
-        n = Math.max(n, lat);
-      }
-  return [w, s, e, n];
+  for (const boundary of boundaries) {
+    const polygons =
+      boundary.geometry.type === "Polygon"
+        ? [boundary.geometry.coordinates]
+        : boundary.geometry.coordinates;
+    for (const polygon of polygons)
+      for (const ring of polygon)
+        for (const [lng, lat] of ring) {
+          w = Math.min(w, lng);
+          s = Math.min(s, lat);
+          e = Math.max(e, lng);
+          n = Math.max(n, lat);
+        }
+  }
+  return w === Infinity ? null : [w, s, e, n];
 }
 
-/** Draws the selected neighbourhood's outline and zooms to it; with none, draws nothing. */
-function showOutline(m: MapLibreMap, outline: Boundary | null): void {
-  m.getSource<GeoJSONSource>(OUTLINE)?.setData(outline ?? NOTHING);
-  if (outline) m.fitBounds(boundsOf(outline), { padding: 32 });
+/**
+ * Outlines the selected neighbourhoods. `fit: "always"` zooms to them (a link that
+ * opens on a selection); "if-hidden" only moves when part of the selection is off
+ * screen, so picking a visible neighbourhood doesn't jump the map.
+ */
+function showSelected(
+  m: MapLibreMap,
+  selected: readonly Boundary[],
+  fit: "always" | "if-hidden",
+): void {
+  m.getSource<GeoJSONSource>(OUTLINE)?.setData({
+    type: "FeatureCollection",
+    features: [...selected],
+  });
+  const box = boundsOf(selected);
+  if (!box) return;
+  const view = m.getBounds();
+  const visible =
+    view.contains([box[0], box[1]]) && view.contains([box[2], box[3]]);
+  if (fit === "always" || !visible) m.fitBounds(box, { padding: 32 });
 }
 
 type Props = {
   city: CityList["city"];
   /** Already filtered; the map shows exactly these. */
   rows: ClosureRow[];
-  /** The selected neighbourhood, outlined; null for none. */
-  outline: Boundary | null;
+  /** Every neighbourhood, for picking on the map; null if the export has none. */
+  boundaries: Boundaries | null;
+  /** The selected neighbourhoods, outlined. */
+  selected: readonly Boundary[];
+  /** A neighbourhood was clicked: add it to the selection, or remove it. */
+  onToggleHood: (name: string) => void;
 };
 
 /**
@@ -80,13 +107,25 @@ type Props = {
  * cluster zooms into it; clicking a point opens its location. The map is created once;
  * a change of rows only swaps the source's data.
  */
-export function ClosureMap({ city, rows, outline }: Props) {
+export function ClosureMap({
+  city,
+  rows,
+  boundaries,
+  selected,
+  onToggleHood,
+}: Props) {
   const container = useRef<HTMLDivElement>(null);
   const map = useRef<MapLibreMap | null>(null);
-  // What the sources should hold; read when the style finishes loading.
+  // What the sources should hold, and the latest callback; read by map handlers.
   const current = useRef(rows);
-  const currentOutline = useRef(outline);
+  const currentBoundaries = useRef(boundaries);
+  const currentSelected = useRef(selected);
+  const toggle = useRef(onToggleHood);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    toggle.current = onToggleHood;
+  }, [onToggleHood]);
 
   useEffect(() => {
     if (!container.current) return;
@@ -105,6 +144,26 @@ export function ClosureMap({ city, rows, outline }: Props) {
     // As soon as the style is ready, not on "load" (which waits for the basemap's tiles),
     // so the closures don't depend on the basemap loading.
     m.on("style.load", () => {
+      // Beneath the closures: the neighbourhoods to pick from, then the selection.
+      m.addSource(HOODS, {
+        type: "geojson",
+        data: currentBoundaries.current ?? NOTHING,
+        generateId: true,
+      });
+      m.addLayer({
+        id: HOODS,
+        type: "fill",
+        source: HOODS,
+        paint: {
+          "fill-color": INK,
+          "fill-opacity": [
+            "case",
+            ["boolean", ["feature-state", "hover"], false],
+            0.08,
+            0,
+          ],
+        },
+      });
       m.addSource(OUTLINE, { type: "geojson", data: NOTHING });
       m.addLayer({
         id: OUTLINE,
@@ -112,7 +171,7 @@ export function ClosureMap({ city, rows, outline }: Props) {
         source: OUTLINE,
         paint: { "line-color": INK, "line-width": 2 },
       });
-      showOutline(m, currentOutline.current);
+      showSelected(m, currentSelected.current, "always");
       m.addSource(SOURCE, {
         type: "geojson",
         data: toGeoJSON(current.current),
@@ -177,7 +236,31 @@ export function ClosureMap({ city, rows, outline }: Props) {
       const loc = e.features?.[0]?.properties?.loc;
       if (typeof loc === "string") navigate(`/location/${loc}`);
     });
-    for (const layer of ["clusters", "points"]) {
+    // Picking a neighbourhood: a click that isn't on a closure or a cluster.
+    m.on("click", HOODS, (e: MapLayerMouseEvent) => {
+      const onClosure = m.queryRenderedFeatures(e.point, {
+        layers: ["clusters", "points"],
+      }).length;
+      const name = e.features?.[0]?.properties?.name;
+      if (!onClosure && typeof name === "string") toggle.current(name);
+    });
+    let hovered: string | number | undefined;
+    const unhover = () => {
+      if (hovered !== undefined)
+        m.setFeatureState({ source: HOODS, id: hovered }, { hover: false });
+      hovered = undefined;
+    };
+    m.on("mousemove", HOODS, (e: MapLayerMouseEvent) => {
+      const id = e.features?.[0]?.id;
+      if (id === hovered) return;
+      unhover();
+      if (id === undefined) return;
+      hovered = id;
+      m.setFeatureState({ source: HOODS, id }, { hover: true });
+    });
+    m.on("mouseleave", HOODS, unhover);
+
+    for (const layer of ["clusters", "points", HOODS]) {
       m.on("mouseenter", layer, () => (m.getCanvas().style.cursor = "pointer"));
       m.on("mouseleave", layer, () => (m.getCanvas().style.cursor = ""));
     }
@@ -190,10 +273,11 @@ export function ClosureMap({ city, rows, outline }: Props) {
   }, [city, navigate]);
 
   useEffect(() => {
-    currentOutline.current = outline;
+    currentSelected.current = selected;
     // Before the style has loaded there's no source; the style.load handler shows it.
-    if (map.current?.getSource(OUTLINE)) showOutline(map.current, outline);
-  }, [outline]);
+    if (map.current?.getSource(OUTLINE))
+      showSelected(map.current, selected, "if-hidden");
+  }, [selected]);
 
   useEffect(() => {
     current.current = rows;
