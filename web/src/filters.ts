@@ -29,8 +29,8 @@ export type Filters = {
   businessTypes: BusinessType[];
   /** Reason codes, or NO_REASON for rows with no known reason. Empty = any. */
   reasons: (ReasonCode | typeof NO_REASON)[];
-  /** Neighbourhood by name, so shared links survive a re-export. */
-  hood: string | null;
+  /** Neighbourhoods by name, so shared links survive a re-export. Empty = any. */
+  hoods: string[];
   /** ISO dates, compared with the row's sortDate (the latest known end of its range). */
   from: string | null;
   to: string | null;
@@ -43,7 +43,7 @@ export const PARAM = {
   statuses: "status",
   businessTypes: "bt",
   reasons: "reason",
-  hood: "hood",
+  hoods: "hood",
   from: "from",
   to: "to",
 } as const;
@@ -76,7 +76,7 @@ export function parseFilters(params: URLSearchParams): Filters {
       ...ReasonCode.options,
       NO_REASON,
     ]),
-    hood: params.get(PARAM.hood) || null,
+    hoods: [...new Set(params.getAll(PARAM.hoods).filter(Boolean))],
     from: date(params.get(PARAM.from)),
     to: date(params.get(PARAM.to)),
   };
@@ -103,9 +103,11 @@ function matchesDate(row: ClosureRow, from: string | null, to: string | null) {
 
 /** The rows that pass every filter, in the list's order (newest first). */
 export function applyFilters(list: CityList, filters: Filters): ClosureRow[] {
-  const hood = filters.hood === null ? -1 : list.hoods.indexOf(filters.hood);
-  // An unknown neighbourhood name matches nothing, rather than silently everything.
-  if (filters.hood !== null && hood === -1) return [];
+  const hoods = new Set(
+    filters.hoods.map((h) => list.hoods.indexOf(h)).filter((i) => i !== -1),
+  );
+  // Only unknown neighbourhood names: match nothing, rather than silently everything.
+  if (filters.hoods.length && !hoods.size) return [];
   const q = fold(filters.q);
 
   return list.closures.filter(
@@ -114,7 +116,7 @@ export function applyFilters(list: CityList, filters: Filters): ClosureRow[] {
       (!filters.statuses.length || filters.statuses.includes(row.status)) &&
       (!filters.businessTypes.length ||
         filters.businessTypes.includes(row.bt)) &&
-      (hood === -1 || row.hood === hood) &&
+      (!hoods.size || hoods.has(row.hood)) &&
       matchesReason(row, filters.reasons) &&
       matchesDate(row, filters.from, filters.to) &&
       (!q || fold(`${row.name} ${row.addr}`).includes(q)),

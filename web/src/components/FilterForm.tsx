@@ -1,5 +1,5 @@
 import type { CityList } from "@ripstaurant/contract";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import type { ChangeEvent } from "react";
 import {
   Form,
@@ -15,6 +15,9 @@ import {
   EVENT_TYPE_OPTIONS,
   REASON_OPTIONS,
 } from "../labels";
+import { Checkbox } from "./ui/checkbox";
+import { MultiCombobox } from "./ui/combobox";
+import { Select } from "./ui/select";
 
 type Props = { list: CityList; filters: Filters };
 
@@ -22,11 +25,15 @@ const SEARCH_DEBOUNCE_MS = 250;
 
 /**
  * The filter controls, for /map and /list. The URL's search params are the filters.
- * Selects, checkboxes, and dates write the URL immediately. The search box waits
+ * Selects, checkboxes, the neighbourhood picker and dates write the URL immediately. The search box waits
  * briefly so typing doesn't navigate on every key. The first change in a visit
  * pushes a history entry; further changes replace it, so Back leaves the filtered
  * view. The form remounts when a non-search param changes, which resets those
  * uncontrolled inputs after Back/Forward.
+ *
+ * Native inputs (dates) reach onFormChange through the form's change event. Base UI
+ * controls update their hidden inputs themselves and fire no change event, so they
+ * call submitSoon, which reads the form once the new values are in the DOM.
  */
 export function FilterForm({ list, filters }: Props) {
   const location = useLocation();
@@ -37,6 +44,10 @@ export function FilterForm({ list, filters }: Props) {
   const wroteThisEntry = useRef(false);
   const [query, setQuery] = useState(filters.q);
   const [historyKey, setHistoryKey] = useState(location.key);
+  const hoodOptions = useMemo(
+    () => list.hoods.map((hood) => ({ value: hood, label: hood })),
+    [list.hoods],
+  );
 
   if (navigationType === "POP" && historyKey !== location.key) {
     setHistoryKey(location.key);
@@ -70,6 +81,14 @@ export function FilterForm({ list, filters }: Props) {
 
   function submitForm(form: HTMLFormElement) {
     submitParams(formToParams(form));
+  }
+
+  /** After a Base UI change: its hidden inputs update on the next render. */
+  function submitSoon() {
+    requestAnimationFrame(() => {
+      const form = formRef.current;
+      if (form) submitForm(form);
+    });
   }
 
   function onQueryChange(value: string) {
@@ -110,56 +129,39 @@ export function FilterForm({ list, filters }: Props) {
       <fieldset>
         <legend>What happened</legend>
         {EVENT_TYPE_OPTIONS.map((o) => (
-          <label key={o.value}>
-            <input
-              type="checkbox"
-              name={PARAM.types}
-              value={o.value}
-              defaultChecked={filters.types.includes(o.value)}
-            />{" "}
-            {o.label}{" "}
-          </label>
+          <Checkbox
+            key={o.value}
+            label={o.label}
+            name={PARAM.types}
+            value={o.value}
+            defaultChecked={filters.types.includes(o.value)}
+            onCheckedChange={submitSoon}
+          />
         ))}
       </fieldset>
 
-      <p>
-        <label>
-          Business{" "}
-          <select
-            name={PARAM.businessTypes}
-            defaultValue={filters.businessTypes[0] ?? ""}
-          >
-            <option value="">Any</option>
-            {BUSINESS_TYPE_OPTIONS.map((o) => (
-              <option key={o.value} value={o.value}>
-                {o.label}
-              </option>
-            ))}
-          </select>
-        </label>{" "}
-        <label>
-          Reason{" "}
-          <select name={PARAM.reasons} defaultValue={filters.reasons[0] ?? ""}>
-            <option value="">Any</option>
-            {REASON_OPTIONS.map((o) => (
-              <option key={o.value} value={o.value}>
-                {o.label}
-              </option>
-            ))}
-          </select>
-        </label>{" "}
-        <label>
-          Neighbourhood{" "}
-          <select name={PARAM.hood} defaultValue={filters.hood ?? ""}>
-            <option value="">Any</option>
-            {list.hoods.map((hood) => (
-              <option key={hood} value={hood}>
-                {hood}
-              </option>
-            ))}
-          </select>
-        </label>
-      </p>
+      <Select
+        label="Business"
+        name={PARAM.businessTypes}
+        options={BUSINESS_TYPE_OPTIONS}
+        defaultValue={filters.businessTypes[0] ?? null}
+        onValueChange={submitSoon}
+      />
+      <Select
+        label="Reason"
+        name={PARAM.reasons}
+        options={REASON_OPTIONS}
+        defaultValue={filters.reasons[0] ?? null}
+        onValueChange={submitSoon}
+      />
+      <MultiCombobox
+        label="Neighbourhoods"
+        name={PARAM.hoods}
+        options={hoodOptions}
+        defaultValue={filters.hoods}
+        onValueChange={submitSoon}
+        placeholder="Any"
+      />
 
       <p>
         <label>
