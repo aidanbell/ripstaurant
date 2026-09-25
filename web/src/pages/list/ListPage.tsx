@@ -10,8 +10,8 @@ const SHOWN = 50;
 export function ListPage() {
   const list = useLoaderData<typeof cityLoader>();
   const [params] = useSearchParams();
-  const filters = parseFilters(params);
-  const rows = useMemo(() => applyFilters(list, filters), [list, params]);
+  const filters = useMemo(() => parseFilters(params), [params]);
+  const rows = useMemo(() => applyFilters(list, filters), [list, filters]);
 
   return (
     <section>
