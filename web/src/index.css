@@ -1,9 +1,69 @@
 @import "tailwindcss";
 
+/* Light is the default. Each token is at least 4.5:1 against --background,
+   and --background is at least 4.5:1 against each token, so text and fills
+   can swap (text-primary on the page, text-background on bg-primary). */
 :root {
+  color-scheme: light;
+  --background: #f2efea;
+  --foreground: #212121;
+  --primary: #403d58;
+  --accent: #9c4030;
+  --secondary: #2f6461;
+  --tertiary: #5c592c;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
+    color-scheme: dark;
+    --background: #212121;
+    --foreground: #f2efea;
+    --primary: #c5c0d6;
+    --accent: #fc7753;
+    --secondary: #66d7d1;
+    --tertiary: #dbd56e;
+  }
+}
+
+@theme inline {
+  --font-sans: "Inter", sans-serif;
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-primary: var(--primary);
+  --color-accent: var(--accent);
+  --color-secondary: var(--secondary);
+  --color-tertiary: var(--tertiary);
+  --font-size-base: 16px;
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-bold: 700;
+  --font-weight-black: 900;
+  --font-weight-thin: 100;
+  --font-weight-extralight: 200;
+  --font-weight-light: 300;
+}
+
+@layer base {
+  body {
+    background: var(--background);
+    color: var(--foreground);
+    /* Base UI: lets backdrops cover the viewport after scrolling on iOS 26+ Safari. */
+    position: relative;
+  }
+
+  /* Base UI: popups (selects, menus, dialogs) portal to <body>; a stacking context on the
+     app root keeps them above page content without z-index battles. */
+  #root {
+    isolation: isolate;
+  }
+
+  a {
+    text-decoration-line: underline;
+    text-underline-offset: 0.15em;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
   }
 }

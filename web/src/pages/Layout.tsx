@@ -1,10 +1,5 @@
-import {
-  Link,
-  NavLink,
-  Outlet,
-  useLocation,
-  useNavigation,
-} from "react-router";
+import { Link, Outlet, useLocation, useNavigation } from "react-router";
+import { Nav } from "../components/Nav";
 
 export function Layout() {
   const navigation = useNavigation();
@@ -13,24 +8,9 @@ export function Layout() {
     navigation.state === "loading" &&
     navigation.location?.pathname !== location.pathname;
   return (
-    <>
-      <header>
-        <p>
-          <Link to={{ pathname: "/", search: location.search }}>
-            RIPstaurant
-          </Link>
-        </p>
-        <nav aria-label="Main">
-          <NavLink to={{ pathname: "/map", search: location.search }}>
-            Map
-          </NavLink>{" "}
-          |{" "}
-          <NavLink to={{ pathname: "/list", search: location.search }}>
-            List
-          </NavLink>{" "}
-          | <NavLink to="/about">About</NavLink>
-        </nav>
-      </header>
+    <main className="min-h-screen flex flex-col bg-background text-foreground">
+      <Nav />
+
       <main>
         {loadingAnotherPage && <p role="status">Loading…</p>}
         <Outlet />
@@ -44,6 +24,6 @@ export function Layout() {
           . <Link to="/about">Sources</Link>
         </p>
       </footer>
-    </>
+    </main>
   );
 }
