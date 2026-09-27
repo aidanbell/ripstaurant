@@ -80,11 +80,40 @@ jobs:
           CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
           WRANGLER_SEND_METRICS: "false"
 
+      # A new version takes a few seconds to reach every Cloudflare edge; until then a
+      # request can get the old files. And a data file that isn't there comes back as
+      # index.html with a 200 (the single-page-app fallback), so check the content type
+      # rather than trusting the status. Waits for this build's manifest (its `generated`
+      # time), then checks the list it points at.
       - name: Check the live site
         run: |
-          manifest=$(curl -fsS "$SITE/data/manifest.json")
-          list=$(echo "$manifest" | jq -r '.cities[0].list')
-          count=$(curl -fsS "$SITE/data/$list" | jq '.closures | length')
-          echo "Live: $count closures ($list)"
+          # Prints a URL's body if it's JSON; fails otherwise. The query string skips any
+          # cached copy (Cloudflare caches by full URL; the file served is the same).
+          json() {
+            local body type
+            body=$(curl -fsS -w '\n%{content_type}' "$1?deploy=$GITHUB_RUN_ID") || return 1
+            type=${body##*$'\n'}
+            [[ $type == application/json* ]] || return 1
+            printf '%s' "${body%$'\n'*}"
+          }
+
+          expected=$(jq -r .generated web/dist/data/manifest.json)
+          for attempt in $(seq 1 12); do
+            manifest=$(json "$SITE/data/manifest.json") &&
+              [ "$(jq -r .generated <<<"$manifest")" = "$expected" ] &&
+              list=$(jq -r '.cities[0].list' <<<"$manifest") &&
+              closures=$(json "$SITE/data/$list") &&
+              break
+            echo "Waiting for this deploy to go live (attempt $attempt of 12)…"
+            manifest=""
+            sleep 10
+          done
+          if [ -z "$manifest" ]; then
+            echo "::error::$SITE isn't serving this build's data (export $expected) after 2 minutes."
+            exit 1
+          fi
+
+          count=$(jq '.closures | length' <<<"$closures")
+          echo "Live: $count closures ($list, export $expected)"
           test "$count" -gt 0
-          curl -fsS -o /dev/null "$SITE/map"
+          curl -fsS -o /dev/null "$SITE/"
