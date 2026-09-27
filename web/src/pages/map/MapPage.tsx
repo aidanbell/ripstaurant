@@ -4,12 +4,18 @@ import { FilterForm } from "../../components/FilterForm";
 import { PARAM, applyFilters, parseFilters } from "../../filters";
 import type { mapLoader } from "../../loaders";
 import { ClosureMap } from "./ClosureMap";
+import { RestaurantRow } from "../../components/RestaurantRow";
 
 export function MapPage() {
   const { list, boundaries } = useLoaderData<typeof mapLoader>();
   const [params, setParams] = useSearchParams();
   const filters = useMemo(() => parseFilters(params), [params]);
   const rows = useMemo(() => applyFilters(list, filters), [list, filters]);
+  // A sorted copy: the map gets `rows` itself.
+  const byName = useMemo(
+    () => rows.toSorted((a, b) => a.name.localeCompare(b.name)),
+    [rows],
+  );
   const outlines = useMemo(
     () =>
       boundaries?.features.filter((f) =>
@@ -40,17 +46,25 @@ export function MapPage() {
   return (
     <section>
       <h1>Map</h1>
-      <FilterForm list={list} filters={filters} />
-      <p>
-        {rows.length} of {list.closures.length} closures
-      </p>
-      <ClosureMap
-        city={list.city}
-        rows={rows}
-        boundaries={boundaries}
-        selected={outlines}
-        onToggleHood={toggleHood}
-      />
+      <FilterForm list={list} filters={filters} shown={rows.length} />
+      <div className="flex flex-row gap-4 h-full w-full p-4">
+        <div className="w-1/2 overflow-y-auto max-h-[70vh]">
+          {byName.map((row) => (
+            <RestaurantRow
+              key={row.id}
+              row={row}
+              hood={list.hoods[row.hood] ?? ""}
+            />
+          ))}
+        </div>
+        <ClosureMap
+          city={list.city}
+          rows={rows}
+          boundaries={boundaries}
+          selected={outlines}
+          onToggleHood={toggleHood}
+        />
+      </div>
     </section>
   );
 }

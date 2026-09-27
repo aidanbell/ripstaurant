@@ -6,15 +6,15 @@ export function Nav() {
   return (
     <nav
       aria-label="Main"
-      className="sticky top-0 z-10 h-12 w-full flex p-2 justify-between text-primary border-b border-foreground h-12 [&_a]:no-underline bg-background"
+      className="sticky top-0 z-10 h-12 w-full flex p-2 justify-between text-primary border-b border-foreground [&_a]:no-underline bg-background"
     >
       <div className="flex items-center text-xl font-bold">RIP</div>
-      <div className="flex items-center mx-auto w-full justify-center gap-4">
+      <div className="flex items-center mx-auto w-full justify-center gap-1 sm:gap-4">
         <NavLink
           to={{ pathname: "/map", search: location.search }}
           className={({ isActive }) =>
             cn(
-              "px-4 py-2 relative text-primary w-24 text-center",
+              "px-3 py-2 relative text-primary text-center sm:w-24",
               isActive && "border-b-2 border-accent",
             )
           }
@@ -25,7 +25,7 @@ export function Nav() {
           to={{ pathname: "/list", search: location.search }}
           className={({ isActive }) =>
             cn(
-              "px-4 py-2 mx-2 text-primary w-24 text-center",
+              "px-3 py-2 text-primary text-center sm:mx-2 sm:w-24",
               isActive && "border-b-2 border-accent",
             )
           }
@@ -36,7 +36,7 @@ export function Nav() {
           to="/about"
           className={({ isActive }) =>
             cn(
-              "px-4 py-2 mx-2 text-primary w-24 text-center",
+              "px-3 py-2 text-primary text-center sm:mx-2 sm:w-24",
               isActive && "border-b-2 border-accent",
             )
           }
@@ -44,7 +44,7 @@ export function Nav() {
           About
         </NavLink>
       </div>
-      <div className="w-12" />
+      <div className="hidden w-12 sm:block" />
     </nav>
   );
 }

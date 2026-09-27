@@ -1,5 +1,5 @@
 import { Link, useLoaderData, useSearchParams } from "react-router";
-import { formatRange } from "../../format";
+import { describeClosure } from "../../format";
 import type { cityLoader } from "../../loaders";
 import { applyFilters, parseFilters } from "../../filters";
 import { useMemo } from "react";
@@ -20,7 +20,7 @@ export function ListPage() {
         {list.closures.length} closures in {list.city.name} since {list.since}.
         Newest {SHOWN}:
       </p>
-      <FilterForm list={list} filters={filters} />
+      <FilterForm list={list} filters={filters} shown={rows.length} />
       <table>
         <thead>
           <tr>
@@ -44,7 +44,7 @@ export function ListPage() {
               <td>{list.hoods[row.hood]}</td>
               <td>{row.type}</td>
               <td>{row.rs || "Unknown"}</td>
-              <td>{formatRange(row.d)}</td>
+              <td>{describeClosure(row.d, row.status, "short")}</td>
             </tr>
           ))}
         </tbody>

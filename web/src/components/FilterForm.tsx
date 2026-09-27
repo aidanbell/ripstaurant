@@ -1,13 +1,10 @@
+import { CheckboxGroup } from "@base-ui/react/checkbox-group";
+import { Input } from "@base-ui/react/input";
+import { MagnifyingGlassIcon } from "@heroicons/react/20/solid";
+import { DEFAULT_VISIBLE_TYPES } from "@ripstaurant/contract";
 import type { CityList } from "@ripstaurant/contract";
-import { useEffect, useMemo, useRef, useState } from "react";
-import type { ChangeEvent } from "react";
-import {
-  Form,
-  Link,
-  useLocation,
-  useNavigationType,
-  useSubmit,
-} from "react-router";
+import { useEffect, useEffectEvent, useMemo, useRef, useState } from "react";
+import { useLocation, useNavigationType, useSearchParams } from "react-router";
 import { PARAM } from "../filters";
 import type { Filters } from "../filters";
 import {
@@ -15,32 +12,38 @@ import {
   EVENT_TYPE_OPTIONS,
   REASON_OPTIONS,
 } from "../labels";
+import type { Option } from "../labels";
+import { describeClosedBetween } from "../format";
+import { ClosedBetween } from "./ClosedBetween";
 import { Checkbox } from "./ui/checkbox";
 import { MultiCombobox } from "./ui/combobox";
-import { Select } from "./ui/select";
+import { FilterPopover } from "./ui/filter-popover";
 
-type Props = { list: CityList; filters: Filters };
+type Props = {
+  list: CityList;
+  filters: Filters;
+  /** How many closures pass the filters, announced as it changes. */
+  shown: number;
+};
 
 const SEARCH_DEBOUNCE_MS = 250;
+const COUNT = new Intl.NumberFormat("en-CA");
 
 /**
- * The filter controls, for /map and /list. The URL's search params are the filters.
- * Selects, checkboxes, the neighbourhood picker and dates write the URL immediately. The search box waits
- * briefly so typing doesn't navigate on every key. The first change in a visit
- * pushes a history entry; further changes replace it, so Back leaves the filtered
- * view. The form remounts when a non-search param changes, which resets those
- * uncontrolled inputs after Back/Forward.
+ * The filter bar, for /map and /list: a search box, then a pill per filter that opens
+ * its controls. The URL's search params are the filters, and every control reads its
+ * value from them, so Back/Forward, shared links and clicks on the map all show up
+ * here. Changes apply straight away; the search box waits briefly so typing doesn't
+ * navigate on every key. The first change in a visit pushes a history entry, further
+ * changes replace it, so Back leaves the filtered view.
  *
- * Native inputs (dates) reach onFormChange through the form's change event. Base UI
- * controls update their hidden inputs themselves and fire no change event, so they
- * call submitSoon, which reads the form once the new values are in the DOM.
+ * The pills scroll sideways on narrow screens; they work the same inside a drawer.
  */
-export function FilterForm({ list, filters }: Props) {
+export function FilterForm({ list, filters, shown }: Props) {
   const location = useLocation();
   const navigationType = useNavigationType();
-  const submit = useSubmit();
-  const formRef = useRef<HTMLFormElement>(null);
-  const timeout = useRef<number | undefined>(undefined);
+  const [, setParams] = useSearchParams();
+  const searchRef = useRef<HTMLInputElement>(null);
   const wroteThisEntry = useRef(false);
   const [query, setQuery] = useState(filters.q);
   const [historyKey, setHistoryKey] = useState(location.key);
@@ -49,166 +52,249 @@ export function FilterForm({ list, filters }: Props) {
     [list.hoods],
   );
 
-  if (navigationType === "POP" && historyKey !== location.key) {
+  // Back/Forward: show that entry's search, and start a new history entry next change.
+  if (historyKey !== location.key) {
     setHistoryKey(location.key);
-    setQuery(filters.q);
+    if (navigationType === "POP") setQuery(filters.q);
   }
-
-  const controlsKey = controlsSearch(location.search);
-
   useEffect(() => {
-    if (navigationType !== "POP") return;
-    window.clearTimeout(timeout.current);
-    wroteThisEntry.current = false;
+    if (navigationType === "POP") wroteThisEntry.current = false;
   }, [location.key, navigationType]);
 
-  useEffect(() => {
-    return () => window.clearTimeout(timeout.current);
-  }, []);
-
-  function submitParams(params: URLSearchParams) {
-    window.clearTimeout(timeout.current);
-    if (paramsKey(params) === paramsKey(new URLSearchParams(location.search)))
-      return;
+  /** Applies `change` to the current URL's params and navigates, if anything changed. */
+  function commit(change: (params: URLSearchParams) => void) {
+    const current = new URLSearchParams(location.search);
+    const next = new URLSearchParams(current);
+    change(next);
+    if (paramsKey(next) === paramsKey(current)) return;
     const replace = wroteThisEntry.current;
     wroteThisEntry.current = true;
-    submit(params, {
-      replace,
-      preventScrollReset: true,
-      defaultShouldRevalidate: false,
+    setParams(next, { replace, preventScrollReset: true });
+  }
+
+  function setAll(param: string, values: readonly string[]) {
+    commit((params) => {
+      params.delete(param);
+      for (const value of values) params.append(param, value);
     });
   }
 
-  function submitForm(form: HTMLFormElement) {
-    submitParams(formToParams(form));
+  function commitQuery(value: string) {
+    const trimmed = value.trim();
+    setAll(PARAM.q, trimmed ? [trimmed] : []);
   }
+  // Reads the URL when the timer fires, so a filter changed meanwhile isn't undone.
+  const commitQuerySoon = useEffectEvent(commitQuery);
+  useEffect(() => {
+    const timeout = window.setTimeout(
+      () => commitQuerySoon(query),
+      SEARCH_DEBOUNCE_MS,
+    );
+    return () => window.clearTimeout(timeout);
+  }, [query]);
 
-  /** After a Base UI change: its hidden inputs update on the next render. */
-  function submitSoon() {
-    requestAnimationFrame(() => {
-      const form = formRef.current;
-      if (form) submitForm(form);
+  const typesActive = !sameSet(filters.types, DEFAULT_VISIBLE_TYPES);
+  const whenActive = filters.from !== null || filters.to !== null;
+  const anyActive =
+    filters.q !== "" ||
+    typesActive ||
+    filters.businessTypes.length > 0 ||
+    filters.reasons.length > 0 ||
+    filters.hoods.length > 0 ||
+    whenActive;
+
+  function clearAll() {
+    setQuery("");
+    commit((params) => {
+      for (const param of Object.values(PARAM)) params.delete(param);
     });
-  }
-
-  function onQueryChange(value: string) {
-    setQuery(value);
-    window.clearTimeout(timeout.current);
-    timeout.current = window.setTimeout(() => {
-      const form = formRef.current;
-      if (form) submitForm(form);
-    }, SEARCH_DEBOUNCE_MS);
-  }
-
-  function onFormChange(event: ChangeEvent<HTMLFormElement>) {
-    const target = event.target;
-    if (target instanceof HTMLInputElement && target.type === "search") return;
-    submitForm(event.currentTarget);
+    // The button goes away once nothing's set: keep focus somewhere useful.
+    searchRef.current?.focus();
   }
 
   return (
-    <Form
-      method="get"
-      ref={formRef}
-      key={controlsKey}
-      onChange={onFormChange}
-      className="flex flex-wrap gap-2"
-    >
-      <p>
-        <label>
-          Name or address{" "}
-          <input
-            type="search"
-            name={PARAM.q}
-            value={query}
-            onChange={(event) => onQueryChange(event.target.value)}
-          />
+    <search className="flex flex-col gap-2">
+      <form
+        className="relative w-full sm:max-w-80"
+        onSubmit={(event) => {
+          event.preventDefault();
+          commitQuery(query);
+        }}
+      >
+        <label htmlFor="closure-search" className="sr-only">
+          Search by name or address
         </label>
-      </p>
+        <MagnifyingGlassIcon
+          className="pointer-events-none absolute top-1/2 left-3 size-5 -translate-y-1/2"
+          aria-hidden="true"
+        />
+        <Input
+          id="closure-search"
+          ref={searchRef}
+          type="search"
+          placeholder="Search a name or street"
+          value={query}
+          onValueChange={setQuery}
+          className="h-10 w-full rounded-full border border-foreground bg-background pr-3 pl-10 placeholder:text-foreground/70"
+        />
+      </form>
 
-      <fieldset>
-        <legend>What happened</legend>
-        {EVENT_TYPE_OPTIONS.map((o) => (
-          <Checkbox
-            key={o.value}
-            label={o.label}
-            name={PARAM.types}
-            value={o.value}
-            defaultChecked={filters.types.includes(o.value)}
-            onCheckedChange={submitSoon}
-          />
-        ))}
-      </fieldset>
-
-      <Select
-        label="Business"
-        name={PARAM.businessTypes}
-        options={BUSINESS_TYPE_OPTIONS}
-        defaultValue={filters.businessTypes[0] ?? null}
-        onValueChange={submitSoon}
-      />
-      <Select
-        label="Reason"
-        name={PARAM.reasons}
-        options={REASON_OPTIONS}
-        defaultValue={filters.reasons[0] ?? null}
-        onValueChange={submitSoon}
-      />
-      <MultiCombobox
-        label="Neighbourhoods"
-        name={PARAM.hoods}
-        options={hoodOptions}
-        defaultValue={filters.hoods}
-        onValueChange={submitSoon}
-        placeholder="Any"
-      />
-
-      <p>
-        <label>
-          Closed from{" "}
-          <input
-            type="date"
-            name={PARAM.from}
-            defaultValue={filters.from ?? ""}
-          />
-        </label>{" "}
-        <label>
-          to{" "}
-          <input type="date" name={PARAM.to} defaultValue={filters.to ?? ""} />
-        </label>
-      </p>
-
-      <p>
-        <Link
-          to={location.pathname}
-          onClick={() => {
-            window.clearTimeout(timeout.current);
-            wroteThisEntry.current = false;
-            setQuery("");
-          }}
+      <div
+        role="group"
+        aria-label="Filters"
+        className="flex gap-2 overflow-x-auto p-1 sm:flex-wrap sm:overflow-visible"
+      >
+        <FilterPopover
+          label="What happened"
+          summary={summarize(labelsOf(EVENT_TYPE_OPTIONS, filters.types), "")}
+          active={typesActive}
+          onReset={() => setAll(PARAM.types, [])}
         >
-          Clear
-        </Link>
+          <CheckboxGroup
+            aria-label="What happened"
+            value={filters.types}
+            onValueChange={(types) =>
+              setAll(
+                PARAM.types,
+                sameSet(types, DEFAULT_VISIBLE_TYPES) ? [] : types,
+              )
+            }
+            className="flex flex-col"
+          >
+            {EVENT_TYPE_OPTIONS.map((o) => (
+              <Checkbox
+                key={o.value}
+                label={o.label}
+                value={o.value}
+                // At least one has to stay on; with none, the defaults would come back.
+                disabled={
+                  filters.types.length === 1 && filters.types[0] === o.value
+                }
+              />
+            ))}
+          </CheckboxGroup>
+        </FilterPopover>
+
+        <MultiCombobox
+          label="Neighbourhood"
+          summary={summarize(filters.hoods, "Anywhere")}
+          options={hoodOptions}
+          value={filters.hoods}
+          onValueChange={(hoods) => setAll(PARAM.hoods, hoods)}
+          placeholder="Search neighbourhoods"
+          empty="No neighbourhood by that name."
+        />
+
+        <FilterPopover
+          label="When"
+          summary={describeClosedBetween(filters.from, filters.to)}
+          active={whenActive}
+          onReset={() =>
+            commit((params) => {
+              params.delete(PARAM.from);
+              params.delete(PARAM.to);
+            })
+          }
+        >
+          <ClosedBetween
+            since={list.since}
+            until={list.generated}
+            from={filters.from}
+            to={filters.to}
+            onCommit={(from, to) =>
+              commit((params) => {
+                params.delete(PARAM.from);
+                params.delete(PARAM.to);
+                if (from) params.set(PARAM.from, from);
+                if (to) params.set(PARAM.to, to);
+              })
+            }
+          />
+        </FilterPopover>
+
+        <FilterPopover
+          label="Kind of place"
+          summary={summarize(
+            labelsOf(BUSINESS_TYPE_OPTIONS, filters.businessTypes),
+            "Any kind",
+          )}
+          active={filters.businessTypes.length > 0}
+          onReset={() => setAll(PARAM.businessTypes, [])}
+        >
+          <CheckboxGroup
+            aria-label="Kind of place"
+            value={filters.businessTypes}
+            onValueChange={(values) => setAll(PARAM.businessTypes, values)}
+            className="flex flex-col"
+          >
+            {BUSINESS_TYPE_OPTIONS.map((o) => (
+              <Checkbox key={o.value} label={o.label} value={o.value} />
+            ))}
+          </CheckboxGroup>
+        </FilterPopover>
+
+        <FilterPopover
+          label="Why it closed"
+          summary={summarize(
+            labelsOf(REASON_OPTIONS, filters.reasons),
+            "Any reason",
+          )}
+          active={filters.reasons.length > 0}
+          onReset={() => setAll(PARAM.reasons, [])}
+        >
+          <p className="text-sm">
+            Most closures don't say why. We only know when there's a public
+            record of it.
+          </p>
+          <CheckboxGroup
+            aria-label="Why it closed"
+            value={filters.reasons}
+            onValueChange={(values) => setAll(PARAM.reasons, values)}
+            className="flex flex-col"
+          >
+            {REASON_OPTIONS.map((o) => (
+              <Checkbox key={o.value} label={o.label} value={o.value} />
+            ))}
+          </CheckboxGroup>
+        </FilterPopover>
+
+        {anyActive && (
+          <button
+            type="button"
+            onClick={clearAll}
+            className="h-10 shrink-0 px-2 whitespace-nowrap underline underline-offset-2"
+          >
+            Clear all
+          </button>
+        )}
+      </div>
+
+      <p role="status" className="text-sm">
+        {anyActive
+          ? `${COUNT.format(shown)} of ${COUNT.format(list.closures.length)} closures`
+          : `${COUNT.format(list.closures.length)} closures`}
       </p>
-    </Form>
+    </search>
   );
 }
 
-/** Search is controlled, so it is left out of the remount key. */
-function controlsSearch(search: string): string {
-  const params = new URLSearchParams(search);
-  params.delete(PARAM.q);
-  return paramsKey(params);
+/** Labels for the picked values, in the options' order. */
+function labelsOf<T extends string>(
+  options: readonly Option<T>[],
+  values: readonly string[],
+): string[] {
+  return options.filter((o) => values.includes(o.value)).map((o) => o.label);
 }
 
-function formToParams(form: HTMLFormElement): URLSearchParams {
-  const params = new URLSearchParams();
-  for (const [key, value] of new FormData(form)) {
-    if (typeof value !== "string") continue;
-    const trimmed = key === PARAM.q ? value.trim() : value;
-    if (trimmed !== "") params.append(key, trimmed);
-  }
-  return params;
+/** ["Annex"] → "Annex"; ["Annex", "Casa Loma", "Leaside"] → "Annex +2" */
+function summarize(labels: readonly string[], none: string): string {
+  const [first] = labels;
+  if (first === undefined) return none;
+  return labels.length === 1 ? first : `${first} +${labels.length - 1}`;
+}
+
+function sameSet(a: readonly string[], b: readonly string[]): boolean {
+  return a.length === b.length && a.every((v) => b.includes(v));
 }
 
 function paramsKey(params: URLSearchParams): string {

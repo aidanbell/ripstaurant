@@ -11,6 +11,7 @@ import "maplibre-gl/dist/maplibre-gl.css";
 import workerUrl from "maplibre-gl/dist/maplibre-gl-worker.mjs?worker&url";
 import { useEffect, useRef } from "react";
 import { useNavigate } from "react-router";
+import { cn } from "../../utils/cn";
 
 /**
  * Stand-in basemap for development: OpenFreeMap's hosted style (free, no key; its
@@ -100,6 +101,7 @@ type Props = {
   selected: readonly Boundary[];
   /** A neighbourhood was clicked: add it to the selection, or remove it. */
   onToggleHood: (name: string) => void;
+  className?: string;
 };
 
 /**
@@ -113,6 +115,7 @@ export function ClosureMap({
   boundaries,
   selected,
   onToggleHood,
+  className,
 }: Props) {
   const container = useRef<HTMLDivElement>(null);
   const map = useRef<MapLibreMap | null>(null);
@@ -290,7 +293,7 @@ export function ClosureMap({
       ref={container}
       role="region"
       aria-label={`Map of ${rows.length} closures`}
-      style={{ height: "70vh" }}
+      className={cn("w-full h-[70vh]", className)}
     />
   );
 }

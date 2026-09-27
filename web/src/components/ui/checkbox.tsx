@@ -19,7 +19,7 @@ type CheckboxProps = {
 /** A labelled checkbox (Base UI). The whole label toggles it. */
 export function Checkbox({ label, ...props }: CheckboxProps) {
   return (
-    <label className="inline-flex items-center gap-1.5">
+    <label className="inline-flex min-h-9 items-center gap-2">
       <BaseCheckbox.Root
         {...props}
         className="inline-flex size-4 shrink-0 items-center justify-center rounded-sm border border-foreground data-[checked]:bg-primary data-[checked]:text-background data-[disabled]:opacity-50"

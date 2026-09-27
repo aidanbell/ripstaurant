@@ -1,5 +1,5 @@
 import { useLoaderData } from "react-router";
-import { formatRange } from "../../format";
+import { describeClosure, describeStay } from "../../format";
 import type { locationLoader } from "../../loaders";
 
 export function LocationPage() {
@@ -12,9 +12,9 @@ export function LocationPage() {
       <ul>
         {location.occupants.map((o) => (
           <li key={`${o.name}-${o.from ?? ""}`}>
-            {o.name}: {o.from ?? "?"} to {o.to ?? "present"}
+            {o.name}: {describeStay(o.from, o.to)}
             {o.event &&
-              `, ${o.event.type} (${o.event.status}, ${formatRange(o.event.d)})`}
+              `. ${o.event.type}: ${describeClosure(o.event.d, o.event.status)}`}
           </li>
         ))}
       </ul>
