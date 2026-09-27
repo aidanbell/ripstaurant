@@ -11,7 +11,8 @@ export function Nav() {
       <div className="flex items-center text-xl font-bold">RIP</div>
       <div className="flex items-center mx-auto w-full justify-center gap-1 sm:gap-4">
         <NavLink
-          to={{ pathname: "/map", search: location.search }}
+          to={{ pathname: "/", search: location.search }}
+          end
           className={({ isActive }) =>
             cn(
               "px-3 py-2 relative text-primary text-center sm:w-24",
@@ -20,17 +21,6 @@ export function Nav() {
           }
         >
           Map
-        </NavLink>
-        <NavLink
-          to={{ pathname: "/list", search: location.search }}
-          className={({ isActive }) =>
-            cn(
-              "px-3 py-2 text-primary text-center sm:mx-2 sm:w-24",
-              isActive && "border-b-2 border-accent",
-            )
-          }
-        >
-          List
         </NavLink>
         <NavLink
           to="/about"

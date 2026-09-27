@@ -1,15 +1,15 @@
 import { createBrowserRouter, data, redirect } from "react-router";
 import type { ShouldRevalidateFunctionArgs } from "react-router";
 import { RouteError } from "./components/RouteError";
-import { cityLoader, locationLoader, mapLoader } from "./loaders";
+import { VIEW } from "./filters";
+import { mapLoader } from "./loaders";
 import { AboutPage } from "./pages/about/AboutPage";
 import { Layout } from "./pages/Layout";
-import { ListPage } from "./pages/list/ListPage";
-import { LocationPage } from "./pages/location/LocationPage";
+import type { RouteHandle } from "./pages/Layout";
 import { MapPage } from "./pages/map/MapPage";
 
-// Data mode: each route's loader fetches before it renders. Filters will live in the
-// URL's search params, shared by /map and /list.
+// Data mode: each route's loader fetches before it renders. Filters and the selected
+// closure live in the URL's search params.
 export const router = createBrowserRouter([
   {
     path: "/",
@@ -19,24 +19,18 @@ export const router = createBrowserRouter([
     children: [
       {
         index: true,
-        loader: ({ request }) => redirect(`/map${new URL(request.url).search}`),
-      },
-      {
-        path: "map",
         loader: mapLoader,
-        shouldRevalidate: revalidateOnPathChange,
+        shouldRevalidate: revalidateOnSelection,
+        handle: { fullscreen: true } satisfies RouteHandle,
         Component: MapPage,
       },
-      {
-        path: "list",
-        loader: cityLoader,
-        shouldRevalidate: revalidateOnPathChange,
-        Component: ListPage,
-      },
+      // Old addresses: the map and list were separate pages, and each location had one.
+      { path: "map", loader: ({ request }) => toMap(request) },
+      { path: "list", loader: ({ request }) => toMap(request) },
       {
         path: "location/:id",
-        loader: locationLoader,
-        Component: LocationPage,
+        loader: ({ params }) =>
+          redirect(`/?${new URLSearchParams({ [VIEW.at]: params.id ?? "" })}`),
       },
       { path: "about", Component: AboutPage },
       {
@@ -49,12 +43,22 @@ export const router = createBrowserRouter([
   },
 ]);
 
-/** Filters live in the query string. The city list does not depend on them. */
-function revalidateOnPathChange({
+/** The map, keeping the filters. */
+function toMap(request: Request) {
+  return redirect(`/${new URL(request.url).search}`);
+}
+
+/**
+ * Filters live in the query string and the city's files don't depend on them; only a
+ * change of page or of selected closure (`?at=`) loads anything.
+ */
+function revalidateOnSelection({
   currentUrl,
   nextUrl,
   defaultShouldRevalidate,
 }: ShouldRevalidateFunctionArgs) {
-  if (currentUrl.pathname === nextUrl.pathname) return false;
-  return defaultShouldRevalidate;
+  if (currentUrl.pathname !== nextUrl.pathname) return defaultShouldRevalidate;
+  return (
+    currentUrl.searchParams.get(VIEW.at) !== nextUrl.searchParams.get(VIEW.at)
+  );
 }

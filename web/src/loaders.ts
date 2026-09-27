@@ -1,31 +1,26 @@
 // Route loaders: they fetch through the data module before a route renders, so pages
-// get their data with `useLoaderData<typeof loader>()`. A missing file is a 404.
+// get their data with `useLoaderData<typeof loader>()`.
 
-import { data } from "react-router";
 import type { LoaderFunctionArgs } from "react-router";
-import { DataFileError, getLocation, loadBoundaries, loadCity } from "./data";
+import { getLocation, loadBoundaries, loadCity } from "./data";
+import { VIEW, findSelected } from "./filters";
 
 export const CITY = "toronto";
 
-export function cityLoader() {
-  return loadCity(CITY);
-}
-
-/** The map also outlines a selected neighbourhood; both files load in parallel. */
-export async function mapLoader() {
+/**
+ * The map: the city's closures and neighbourhood outlines (in parallel), and the
+ * selected closure's location (`?at=`). That one isn't awaited: the map renders
+ * straight away and the details stream in beside it.
+ */
+export async function mapLoader({ request }: LoaderFunctionArgs) {
   const [list, boundaries] = await Promise.all([
     loadCity(CITY),
     loadBoundaries(CITY),
   ]);
-  return { list, boundaries };
-}
-
-export async function locationLoader({ params }: LoaderFunctionArgs) {
-  try {
-    return await getLocation(CITY, params.id ?? "");
-  } catch (error) {
-    if (error instanceof DataFileError && error.status === 404)
-      throw data("No closure recorded at this address.", { status: 404 });
-    throw error;
-  }
+  const selected = findSelected(
+    list,
+    new URL(request.url).searchParams.get(VIEW.at),
+  );
+  const detail = selected ? getLocation(CITY, selected.loc) : null;
+  return { list, boundaries, selected, detail };
 }

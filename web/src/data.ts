@@ -88,9 +88,11 @@ export function loadBoundaries(slug: string): Promise<Boundaries | null> {
   });
 }
 
-export async function getLocation(
-  city: string,
-  id: string,
-): Promise<LocationDetail> {
-  return LocationDetail.parse(await getJson(locationPath(city, id)));
+const locations = new Map<string, Promise<LocationDetail>>();
+
+/** One address's history and sources; each is fetched once, then reused. */
+export function getLocation(city: string, id: string): Promise<LocationDetail> {
+  return once(locations, `${city}/${id}`, async () =>
+    LocationDetail.parse(await getJson(locationPath(city, id))),
+  );
 }

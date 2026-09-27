@@ -10,7 +10,6 @@ import type { GeoJSONSource, MapLayerMouseEvent } from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
 import workerUrl from "maplibre-gl/dist/maplibre-gl-worker.mjs?worker&url";
 import { useEffect, useRef } from "react";
-import { useNavigate } from "react-router";
 import { cn } from "../../utils/cn";
 
 /**
@@ -30,10 +29,16 @@ const SOURCE = "closures";
 const OUTLINE = "outline";
 /** Every neighbourhood, invisible until hovered: the click target for picking one. */
 const HOODS = "hoods";
+/** The selected closure: a ring around its dot, drawn from its own source so it shows
+ * even when filters hide the closure itself. */
+const FOCUS = "focus";
+const FOCUS_ZOOM = 16;
 const INK = "#222";
+/** --accent (light theme): the ring has to stand out from the ink dots. */
+const RING = "#9c4030";
 const NOTHING: FeatureCollection = { type: "FeatureCollection", features: [] };
 
-type Properties = { loc: string; name: string };
+type Properties = { id: string; loc: string; name: string };
 
 /** Rows → GeoJSON in the browser (PLAN: the list file stays compact; this is derived). */
 function toGeoJSON(rows: ClosureRow[]): FeatureCollection<Point, Properties> {
@@ -42,7 +47,7 @@ function toGeoJSON(rows: ClosureRow[]): FeatureCollection<Point, Properties> {
     features: rows.map((row) => ({
       type: "Feature",
       geometry: { type: "Point", coordinates: row.ll },
-      properties: { loc: row.loc, name: row.name },
+      properties: { id: row.id, loc: row.loc, name: row.name },
     })),
   };
 }
@@ -67,6 +72,20 @@ function boundsOf(boundaries: readonly Boundary[]): Box | null {
         }
   }
   return w === Infinity ? null : [w, s, e, n];
+}
+
+function focusData(focus: ClosureRow | null): FeatureCollection {
+  if (!focus) return NOTHING;
+  return {
+    type: "FeatureCollection",
+    features: [
+      {
+        type: "Feature",
+        geometry: { type: "Point", coordinates: focus.ll },
+        properties: {},
+      },
+    ],
+  };
 }
 
 /**
@@ -101,13 +120,22 @@ type Props = {
   selected: readonly Boundary[];
   /** A neighbourhood was clicked: add it to the selection, or remove it. */
   onToggleHood: (name: string) => void;
+  /** The selected closure: ringed, and the map flies to it. */
+  focus: ClosureRow | null;
+  /** A closure's dot was clicked. */
+  onSelect: (id: string) => void;
+  /**
+   * How much of the map's bottom edge is covered (the sheet on phones), in pixels, so
+   * the selected closure is centred in the part that shows.
+   */
+  coveredBottom?: number;
   className?: string;
 };
 
 /**
  * The closures on a map: clusters at low zoom, a point per closure closer in. Clicking a
- * cluster zooms into it; clicking a point opens its location. The map is created once;
- * a change of rows only swaps the source's data.
+ * cluster zooms into it; clicking a point selects it. The map is created once; a change
+ * of rows only swaps the source's data.
  */
 export function ClosureMap({
   city,
@@ -115,6 +143,9 @@ export function ClosureMap({
   boundaries,
   selected,
   onToggleHood,
+  focus,
+  onSelect,
+  coveredBottom = 0,
   className,
 }: Props) {
   const container = useRef<HTMLDivElement>(null);
@@ -124,17 +155,27 @@ export function ClosureMap({
   const currentBoundaries = useRef(boundaries);
   const currentSelected = useRef(selected);
   const toggle = useRef(onToggleHood);
-  const navigate = useNavigate();
+  const select = useRef(onSelect);
+  const currentFocus = useRef(focus);
+  const covered = useRef(coveredBottom);
 
   useEffect(() => {
     toggle.current = onToggleHood;
-  }, [onToggleHood]);
+    select.current = onSelect;
+    covered.current = coveredBottom;
+  }, [onToggleHood, onSelect, coveredBottom]);
 
   useEffect(() => {
     if (!container.current) return;
     const m = new MapLibreMap({
       container: container.current,
       style: BASEMAP_STYLE,
+      // The map page has no footer, so the data licence goes with the basemap's credits.
+      attributionControl: {
+        compact: true,
+        customAttribution:
+          '<a href="https://open.toronto.ca/open-data-license/">Contains information licensed under the Open Government Licence – Toronto</a>',
+      },
       bounds: city.bbox,
       fitBoundsOptions: { padding: 16 },
       maxBounds: [
@@ -174,7 +215,18 @@ export function ClosureMap({
         source: OUTLINE,
         paint: { "line-color": INK, "line-width": 2 },
       });
-      showSelected(m, currentSelected.current, "always");
+      // A link to a closure opens on it; otherwise on the selected neighbourhoods.
+      const initialFocus = currentFocus.current;
+      showSelected(
+        m,
+        currentSelected.current,
+        initialFocus ? "if-hidden" : "always",
+      );
+      if (initialFocus) {
+        m.jumpTo({ center: initialFocus.ll, zoom: FOCUS_ZOOM });
+        // Up into the part of the map the sheet doesn't cover.
+        m.panBy([0, covered.current / 2], { duration: 0 });
+      }
       m.addSource(SOURCE, {
         type: "geojson",
         data: toGeoJSON(current.current),
@@ -225,6 +277,18 @@ export function ClosureMap({
           "circle-stroke-width": 1,
         },
       });
+      m.addSource(FOCUS, { type: "geojson", data: focusData(initialFocus) });
+      m.addLayer({
+        id: FOCUS,
+        type: "circle",
+        source: FOCUS,
+        paint: {
+          "circle-radius": 10,
+          "circle-opacity": 0,
+          "circle-stroke-color": RING,
+          "circle-stroke-width": 3,
+        },
+      });
     });
 
     m.on("click", "clusters", async (e: MapLayerMouseEvent) => {
@@ -236,8 +300,8 @@ export function ClosureMap({
       m.easeTo({ center: e.lngLat, zoom });
     });
     m.on("click", "points", (e: MapLayerMouseEvent) => {
-      const loc = e.features?.[0]?.properties?.loc;
-      if (typeof loc === "string") navigate(`/location/${loc}`);
+      const id = e.features?.[0]?.properties?.id;
+      if (typeof id === "string") select.current(id);
     });
     // Picking a neighbourhood: a click that isn't on a closure or a cluster.
     m.on("click", HOODS, (e: MapLayerMouseEvent) => {
@@ -273,7 +337,24 @@ export function ClosureMap({
       m.remove();
       map.current = null;
     };
-  }, [city, navigate]);
+  }, [city]);
+
+  useEffect(() => {
+    currentFocus.current = focus;
+    const m = map.current;
+    // Before the style has loaded there's no source; the style.load handler shows it.
+    const source = m?.getSource<GeoJSONSource>(FOCUS);
+    if (!m || !source) return;
+    source.setData(focusData(focus));
+    // Closer in if needed, never back out. MapLibre skips the animation for anyone who
+    // prefers reduced motion.
+    if (focus)
+      m.flyTo({
+        center: focus.ll,
+        zoom: Math.max(m.getZoom(), FOCUS_ZOOM),
+        offset: [0, -covered.current / 2],
+      });
+  }, [focus]);
 
   useEffect(() => {
     currentSelected.current = selected;

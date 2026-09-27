@@ -1,5 +1,24 @@
-import { Link, Outlet, useLocation, useNavigation } from "react-router";
+import {
+  Link,
+  Outlet,
+  useLocation,
+  useMatches,
+  useNavigation,
+} from "react-router";
 import { Nav } from "../components/Nav";
+import { cn } from "../utils/cn";
+
+/** A route's `handle`. `fullscreen`: the page fills the screen below the nav, no scrolling. */
+export type RouteHandle = { fullscreen?: boolean };
+
+function isFullscreen(handle: unknown): boolean {
+  return (
+    typeof handle === "object" &&
+    handle !== null &&
+    "fullscreen" in handle &&
+    handle.fullscreen === true
+  );
+}
 
 export function Layout() {
   const navigation = useNavigation();
@@ -7,15 +26,22 @@ export function Layout() {
   const loadingAnotherPage =
     navigation.state === "loading" &&
     navigation.location?.pathname !== location.pathname;
+  const fullscreen = useMatches().some((match) => isFullscreen(match.handle));
   return (
-    <main className="min-h-screen flex flex-col bg-background text-foreground">
+    <div
+      className={cn(
+        "flex flex-col bg-background text-foreground",
+        fullscreen ? "h-dvh overflow-hidden" : "min-h-dvh",
+      )}
+    >
       <Nav />
 
-      <main>
+      <main className="flex min-h-0 flex-1 flex-col">
         {loadingAnotherPage && <p role="status">Loading…</p>}
         <Outlet />
       </main>
-      <footer>
+      {/* Full-screen pages credit the licence on the map itself (ClosureMap). */}
+      <footer className={cn(fullscreen && "hidden")}>
         <p>
           Contains information licensed under the{" "}
           <a href="https://open.toronto.ca/open-data-license/">
@@ -24,6 +50,6 @@ export function Layout() {
           . <Link to="/about">Sources</Link>
         </p>
       </footer>
-    </main>
+    </div>
   );
 }

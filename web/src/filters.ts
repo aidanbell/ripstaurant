@@ -48,6 +48,34 @@ export const PARAM = {
   to: "to",
 } as const;
 
+/**
+ * URL params that aren't filters, so Clear all leaves them: the selected closure, and
+ * the list's order.
+ */
+export const VIEW = { at: "at", sort: "sort" } as const;
+
+export type Sort = "newest" | "name";
+
+export function parseSort(params: URLSearchParams): Sort {
+  return params.get(VIEW.sort) === "name" ? "name" : "newest";
+}
+
+/**
+ * The closure `?at=` names: a closure id, or a location id (old /location/:id links),
+ * which means that address's newest closure. Unknown ids select nothing.
+ */
+export function findSelected(
+  list: CityList,
+  at: string | null,
+): ClosureRow | null {
+  if (!at) return null;
+  return (
+    list.closures.find((row) => row.id === at) ??
+    list.closures.find((row) => row.loc === at) ??
+    null
+  );
+}
+
 const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/;
 
 /** Values from the URL that are one of the allowed codes; anything else is dropped. */
