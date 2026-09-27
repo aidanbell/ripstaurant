@@ -63,8 +63,10 @@ export const Occupant = z.object({
   name: z.string(),
   bt: BusinessType.optional(),
   /**
-   * When this occupant was here, from the records (licence issued, first inspection) or,
-   * for an occupant with an event, until the event's latest date. `to: null` = still here.
+   * When this occupant was seen here: `from` its first record (licence issued, first
+   * inspection), `to` its last (for DineSafe, the last inspection). `to: null` = still
+   * here. For an occupant that closed, `to` is when it was last seen open; when it
+   * actually closed is its event's `d`, a window that starts there. Not its lifespan.
    */
   from: IsoDate.nullable(),
   to: IsoDate.nullable(),
