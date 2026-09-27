@@ -155,6 +155,6 @@ Writes the public dataset in the contract's format: `manifest.json`, `toronto/cl
 
 - **What's exported:** events with confidence ≥ 0.6 (`MIN_CONFIDENCE`, PLAN's open question), a business type, and a place on the map, dated on or after 2022-03-01. Food retail (groceries, convenience stores, butchers) stays in the database, where it still counts as a successor when detecting closures, but isn't published (`UNPUBLISHED_TYPES`), neither as closures nor in a location's history. The contract allows one event per occupant; the end of the occupancy wins over an ownership change or a temporary closure.
 - **What never is:** confidence scores, match statuses, licence owners, internal ids. Evidence and reasons cite the dataset their record came from, with its retrieval date.
-- **Detail files** show every occupant at the address, oldest first; one with no detected end is `to: null` (still here).
+- **Detail files** show every occupant at the address, oldest first, `from` its first record `to` its last (for DineSafe, its last inspection); `to: null` = still here. For one that closed, `to` is when it was last seen open, and its event's `d` is the closure window that starts there, not its lifespan.
 
 As of 2026-09-24: 5,494 closures at 4,208 locations (restaurants 3,302, take-out 1,923, bakeries 172, bars 91, markets 5, breweries 1); the list is 328 KB gzipped. Not yet in a workflow: it runs once the site's hosting is set up.

@@ -293,7 +293,8 @@ async function exportCity(cityId: string): Promise<string> {
       const occupant: Occupant = {
         name: o.name,
         from: o.first_seen,
-        // Still here unless an end was detected; with an event, until the event's latest date.
+        // The last time it was seen here (for DineSafe, its last inspection); null = still
+        // here. When it closed is the event's `d`, a window that starts at this date.
         to: o.ended ? o.last_seen : null,
         src: [
           ...(sourcesSeen.get(`${o.establishment_id}|${o.location_id}`) ?? []),
@@ -334,7 +335,6 @@ async function exportCity(cityId: string): Promise<string> {
           exported.next.addr = target.address;
         }
       }
-      if (event.latest) occupant.to = event.latest;
       occupant.event = exported;
       return occupant;
     });

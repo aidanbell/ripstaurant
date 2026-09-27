@@ -178,7 +178,13 @@ function stoppedWeight(days: number): number {
   return 0;
 }
 
+/** Today, as an ISO date. */
+const TODAY = new Date().toISOString().slice(0, 10);
+
 function inWindow(earliest: string | null, latest: string | null): boolean {
+  // Licences can carry dates that haven't come yet (a transfer booked for next
+  // month): not an event until then. The next run after that date picks it up.
+  if (earliest && earliest > TODAY) return false;
   if (latest) return latest >= WINDOW_START;
   return (earliest ?? "") >= addDays(WINDOW_START, -UNBOUNDED_GRACE_DAYS);
 }
