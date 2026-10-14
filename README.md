@@ -21,6 +21,7 @@ bun run resolve           # build establishments, locations and occupancies
 bun run detect            # detect closures, with evidence and documented reasons
 bun run export            # write the site's data files to web/public/data/
 bun run report            # how well records parse and addresses match
+bun run ground-truth      # hand-verified sample of published closures (draw / import / score)
 bun run sample            # rebuild contract/sample/ from the fixture
 bun run sample:synthetic  # 10k-row perf-test export (git-ignored)
 bun run typecheck         # every package, against the root tsconfig.base.json

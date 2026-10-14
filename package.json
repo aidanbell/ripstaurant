@@ -28,6 +28,8 @@
     "resolve": "bun pipeline/src/resolve.ts",
     "detect": "bun pipeline/src/detect.ts",
     "export": "bun pipeline/src/export.ts",
+    "news": "bun pipeline/src/news.ts",
+    "ground-truth": "bun pipeline/src/ground-truth.ts",
     "claude:check": "bun pipeline/src/claude-check.ts",
     "db:psql": "docker compose -f db/compose.yaml exec db psql -U ripstaurant"
   },
