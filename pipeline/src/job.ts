@@ -4,6 +4,7 @@
 //
 //   --only <name>   run one step
 //   --upload        raw files to S3_BUCKET (R2) instead of data/raw/
+//   --backfill      for crawl steps: read all history instead of only what's new
 //   --remote        allow a non-local DATABASE_URL outside CI (read by @ripstaurant/db)
 
 import { parseArgs } from "node:util";
@@ -16,7 +17,11 @@ export const CITY = "toronto";
 export type Step = {
   name: string;
   /** Returns a one-line summary for the log. */
-  run: (cityId: string, store: RawStore) => Promise<string>;
+  run: (
+    cityId: string,
+    store: RawStore,
+    options: { backfill: boolean },
+  ) => Promise<string>;
 };
 
 export async function runJob(steps: Step[]): Promise<void> {
@@ -24,6 +29,7 @@ export async function runJob(steps: Step[]): Promise<void> {
     options: {
       only: { type: "string" },
       upload: { type: "boolean", default: false },
+      backfill: { type: "boolean", default: false },
       remote: { type: "boolean", default: false },
     },
   });
@@ -45,7 +51,9 @@ export async function runJob(steps: Step[]): Promise<void> {
   for (const step of selected) {
     const started = performance.now();
     try {
-      const summary = await step.run(city.id, store);
+      const summary = await step.run(city.id, store, {
+        backfill: args.backfill,
+      });
       const secs = ((performance.now() - started) / 1000).toFixed(0);
       console.log(`${step.name}: ${summary} (${secs}s)`);
     } catch (error) {

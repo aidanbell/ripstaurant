@@ -23,6 +23,8 @@ export default defineConfig(
       "src/detect.ts",
       "src/export.ts",
       "src/claude-check.ts",
+      "src/ground-truth.ts",
+      "src/polite.ts",
     ],
     rules: { "no-console": "off" },
   },

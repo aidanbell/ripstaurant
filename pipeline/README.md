@@ -144,6 +144,41 @@ An occupancy is only an event if some signal says it ended (stopped, licence, su
 
 As of 2026-09-24: 11,781 events, including 10,033 permanent, 497 relocations, 50 rebrands, 69 temporary and 1,132 ownership changes. Of the 10,580 end-of-occupancy events, 5,851 have confidence ≥ 0.6, about 1,100–1,500 a year. Against the contract's 25 hand-researched closures: all 17 that bulk data can show are detected, each with a date range containing the real date. The other 8 are announcements or format changes (news, Phase 5), a closure in the gap between the archive and the current feed, or not in the City's data.
 
+## News crawl (Phase 5)
+
+```sh
+bun run news                    # what's new: newest sitemap pages and roundups (~10 min)
+bun run news --backfill         # all history (~450 requests, about 45 minutes)
+bun run news --only link        # re-link stored sources; no requests
+```
+
+Runs on the 2nd and 16th of each month from `.github/workflows/news.yml` (the day after the snapshot has rebuilt closure events), or by hand with "backfill" ticked. `bun run news --backfill` is safe to repeat: stored sources are skipped by URL.
+
+| Publisher                      | Read                                                             | Becomes                                                                                                                        |
+| ------------------------------ | ---------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
+| blogTO                         | article sitemaps (title, slug, publish date); no article page    | a `sources` row for each food article with closure wording                                                                     |
+| Daily Hive                     | Toronto URLs in the article sitemaps (slug only, no dates)       | the same; can't be linked yet, as the sitemap has no publish date                                                              |
+| Toronto Restaurants (Dickison) | each weekly OPEN/CLOSED roundup from 2022-02; its CLOSED section | a `sources` row, plus a `source_extractions` row (`extractor = 'rules'`) of the addresses named there: no article text is kept |
+
+All three publishers gave written permission. The crawl is polite (`src/polite.ts`): one request at a time per site, 5 to 7 seconds apart, `robots.txt` honoured (including any `Crawl-delay`), backoff on 429 and 5xx, an abort after five failures in a row, and the pipeline's own user agent. Responses are cached under `data/crawl/cache/` for local re-runs.
+
+**Linking** (`link` step) rebuilds the job's `evidence` rows from the stored sources on every run, leaving rows a reviewer has confirmed or rejected:
+
+- **Dickison:** each address is matched to an address point (exact, never `nearby`), then to the establishments there. The establishment's name agreeing with the words before the address, and the roundup week falling within the closure window (60 days before to 120 days after), gives an `auto` row on the closure event. A name or a date alone gives `review`. Where we track the business but have no closure event, the row attaches to the establishment (`review`, "no closure event yet"), which marks a closure detect has missed.
+- **blogTO:** every distinctive word of an establishment's name must be in the article's slug, and the publish date must fall within 150 days before to 240 days after the closure window. Always `review`.
+
+Extraction is rules, not a model, so it says who closed where and about when. It doesn't read reasons, last days or years in business, and the dates it gives (a roundup week, a publish date) are estimates, not hard bounds. Nothing changes in the published data yet: evidence is staged for the review queue and for a later step that uses it.
+
+## Ground-truth sample
+
+```sh
+bun run ground-truth draw                     # 100 random published end events; writes data/ground-truth/<sample>.csv
+bun run ground-truth import <file.csv>        # verdicts from the filled-in CSV
+bun run ground-truth score                    # the sample against the current export
+```
+
+Measures clean-up by whether it was right, not just how much it changed (`docs/data-gaps.md`, step 1). Draw and score read the export, since the sample is of what the site shows. Verdicts (`closed`, `open`, `not_a_closure`, plus the month closed and a source URL) go in `review_decisions`, keyed by the published event id rather than `closure_events.id`, so resolve and detect can still delete an event the sample shows is false. `--sample <name>` picks the batch (default `ground-truth-2026-09`).
+
 ## Export (Phase 7)
 
 ```sh
