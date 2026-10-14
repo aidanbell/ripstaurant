@@ -1,0 +1,40 @@
+# Reads new closure coverage from blogTO, Daily Hive and Toronto Restaurants (Stephanie
+# Dickison) twice a month, the day after the snapshot has rebuilt closure events, and
+# links it to them as evidence. All three publishers have given written permission; the
+# crawl is polite (one request at a time per site, 5+ seconds apart).
+#
+# Run by hand with "backfill" ticked to read all history (about 45 minutes). GitHub
+# emails on failure.
+
+name: News
+
+on:
+  schedule:
+    # 2nd and 16th at 14:00 UTC, after the snapshot's resolve and detect on the 1st and 15th.
+    - cron: "0 14 2,16 * *"
+  workflow_dispatch:
+    inputs:
+      backfill:
+        description: Read all history, not only what's new
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+concurrency:
+  group: news
+  cancel-in-progress: false
+
+jobs:
+  news:
+    runs-on: ubuntu-latest
+    environment: production
+    timeout-minutes: 120
+    env:
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
+    steps:
+      - uses: actions/checkout@v5
+      - uses: oven-sh/setup-bun@v2
+      - run: bun install --frozen-lockfile
+      - run: bun run news ${{ inputs.backfill && '--backfill' || '' }}
